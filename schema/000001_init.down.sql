@@ -1,0 +1,10 @@
+drop table done_lessons;
+drop table lessons;
+drop table last_subjects;
+drop table themes;
+drop table test_questions;
+drop table done_test;
+drop table subject_test;
+drop table subjects;
+drop table profiles;
+drop table users;
