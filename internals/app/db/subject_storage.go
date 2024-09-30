@@ -36,14 +36,15 @@ func (db *SubjectStorage) UploadStorage(title, description, image_url string) (i
 	return id, err
 }
 
-func (db *SubjectStorage) GetSubjectById(id int) []models.Subject {
+func (db *SubjectStorage) GetSubjectById(id int) ([]models.Subject, error) {
 	query := "SELECT id, title, image, description FROM subjects WHERE id = $1;"
 
 	var result []models.Subject
 	err := pgxscan.Select(context.Background(), db.databasePool, &result, query, id)
 	if err != nil {
 		log.Errorln(err)
+		return result,err
 	}
-	return result
+	return result, nil
 
 }

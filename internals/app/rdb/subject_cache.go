@@ -58,3 +58,13 @@ func (db *SubjectCache) GetAllSubjects() ([]models.Subject, error) {
 		return result, nil
 	}
 }
+
+
+func (db *SubjectCache) UploadStorage(title, description,image_url string) (int, error) {
+	return db.storage.UploadStorage(title, description,image_url)
+}
+
+
+func (db *SubjectCache) GetSubjectById(num int) ([]models.Subject, error) {
+	return db.storage.GetSubjectById(num)
+}
