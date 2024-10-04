@@ -33,6 +33,44 @@ docker  run --name=go-praxis-back -p 80:8080 go-praxis
 ```bash
 migrate -path ./schema -database 'postgres://postgres:admin@localhost:5436/postgres?sslmode=disable' up  
 ```
+
+
+# API DOC
+
+### Subjects
+    --Get--
+    /api/subject
+    --Request--
+    none
+    --Response--
+    {
+    "data": [{
+      "id": int,
+      "title": string,
+      "image": string,
+      "description": string }],
+    "result": "ok"
+    }
+    --info--
+    Возращает массив обьектов (курсов)
+---
+    --Get--
+    /api/subject/{id}
+    --Request--
+    none
+    --Response--
+    {
+    "data": [{
+      "id": int,
+      "title": string,
+      "image": string,
+      "description": string }],
+    "result": "ok"
+    }
+    --info--
+    Возращает массив с обьектом (курс)
+---
+
  
 # !!! Все что идет дальше не важно !!!
 
