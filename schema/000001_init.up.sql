@@ -183,7 +183,8 @@ CREATE TABLE subject_test (
 );
 
 INSERT INTO subject_test(title, subject_id) VALUES ('Основные операторы SQL',1);
-
+INSERT INTO subject_test(title, subject_id) VALUES ('Построение запросов SQL',1);
+INSERT INTO subject_test(title, subject_id) VALUES ('Основные теги HTML',2);
 
 CREATE TABLE test_questions (
        id serial PRIMARY KEY,
@@ -195,6 +196,7 @@ CREATE TABLE test_questions (
 );
 
 INSERT INTO test_questions(question,options,answer,test_id) VALUES ('Какой оператор позволяет делать выборку из таблицы?','INSERT INTO;SELECT;UPDATE;DELETE','SELECT',1);
+INSERT INTO test_questions(question,options,answer,test_id) VALUES ('Тест вопрос?','INSERT INTO;SELECT;UPDATE;DELETE','SELECT',2);
 
 
 
@@ -208,3 +210,4 @@ CREATE TABLE done_test (
 );
 
 INSERT INTO done_test(test_id,user_id,points) VALUES (1,'b43a1721-2bc3-4421-8e70-b7bd932ad802',5);
+INSERT INTO done_test(test_id,user_id,points) VALUES (2,'b43a1721-2bc3-4421-8e70-b7bd932ad802',10);

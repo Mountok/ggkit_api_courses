@@ -38,7 +38,7 @@ migrate -path ./schema -database 'postgres://postgres:admin@localhost:5436/postg
 # API DOC
 
 ### Subjects
-    --Get--
+    --GET--
     /api/subject
     --Request--
     none
@@ -54,7 +54,7 @@ migrate -path ./schema -database 'postgres://postgres:admin@localhost:5436/postg
     --info--
     Возращает массив обьектов (курсов)
 ---
-    --Get--
+    --GET--
     /api/subject/{id}
     --Request--
     none
@@ -70,8 +70,29 @@ migrate -path ./schema -database 'postgres://postgres:admin@localhost:5436/postg
     --info--
     Возращает массив с обьектом (курс)
 ---
+    --POST--
+    /api/subject
+    --Request--
+    type FormValue
+    {
+      title: string
+      description: string
+      image: string
+    }
+    --Response--
+    {
+      result: string,
+      subject_id: int
+    }
+    --info--
+    Возращает id созданного курса
+---
+ ### Theme
+---
+<br>
+<br>
+<br>
 
- 
 # !!! Все что идет дальше не важно !!!
 
 ---

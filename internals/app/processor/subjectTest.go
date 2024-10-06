@@ -58,8 +58,12 @@ func (processor *SubjectTestProcessor) CreateComletedTest(testId,userId, pointsS
 	return processor.storage.CreateCompletedTest(userId,testId,points)
 }
 
-func (processor *SubjectTestProcessor) ReadComletedTest(testId,userId string) ([]models.CompletedTest, error) {
-	return processor.storage.ReadCompletedTest(testId,userId)
+func (processor *SubjectTestProcessor) ReadComletedTest(subject_id,userId string) ([]models.CompletedTestCheck, error) {
+	subjectIDInt, err := strconv.Atoi(subject_id)
+   if err != nil {
+       return []models.CompletedTestCheck{}, err
+   }
+	return processor.storage.ReadCompletedTest(subjectIDInt,userId)
 }
 
 func (processor *SubjectTestProcessor) UpdateComletedTest(testId,userId,pointsString string) (int,error){
@@ -80,6 +84,10 @@ func (processor *SubjectTestProcessor) DeleteCompletedTest(testId,userId,complet
 
 // --------------------- ПРОВЕРКА ВОПРОСОВ
 
-func (processor *SubjectTestProcessor) CheckQuestion(answers []models.QuestionCheckReq) (int, error) {
-	return processor.storage.CheckQuestion(answers)
+func (processor *SubjectTestProcessor) CheckQuestion(answers []models.QuestionCheckReq,test_id,user_id,subject_id string) (int, error) {
+	subjectIDInt, err := strconv.Atoi(subject_id)
+	if err != nil {
+		return 0, err
+	}
+	return processor.storage.CheckQuestion(answers,test_id,user_id,subjectIDInt)
 }

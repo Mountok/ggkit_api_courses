@@ -144,12 +144,13 @@ func (handler *SubjectTestHandler) TestsQuestions(w http.ResponseWriter, r *http
 func (handler *SubjectTestHandler) CompletedTest(w http.ResponseWriter, r *http.Request) {
 	var (
 		vars = mux.Vars(r)
-		testId = vars["test_id"]
 		userId = r.FormValue("user_id")
+		subjectId = r.FormValue("subject_id")
 		m = make(map[string]interface{})
 	)
 	switch r.Method {
 	case http.MethodPost:
+		testId := vars["test_id"]
 		pointsString := r.FormValue("points")
 		compledetTestId, err := handler.processor.CreateComletedTest(testId,userId,pointsString)
 		if err != nil {
@@ -161,7 +162,7 @@ func (handler *SubjectTestHandler) CompletedTest(w http.ResponseWriter, r *http.
 			"completed_test_id": compledetTestId,
 		}
 	case http.MethodGet:
-		completedTest, err := handler.processor.ReadComletedTest(testId,userId)
+		completedTest, err := handler.processor.ReadComletedTest(subjectId,userId)
 		if err != nil {
 			WrapError(w,err)
 			return
@@ -171,18 +172,21 @@ func (handler *SubjectTestHandler) CompletedTest(w http.ResponseWriter, r *http.
 			"data": completedTest,
 		}
 	case http.MethodPut:
+		testId := vars["test_id"]
 		pointsString := r.FormValue("points")
-		testId, err := handler.processor.UpdateComletedTest(testId,userId,pointsString)
+		id, err := handler.processor.UpdateComletedTest(testId,userId,pointsString)
 		if err != nil {
 			WrapError(w,err)
 			return
 		}
 		m = map[string]interface{}{
 			"result": "OK",
-			"updated_completed_test_id": testId,
+			"updated_completed_test_id": id,
 		}
 		
 	case http.MethodDelete:
+		testId := vars["test_id"]
+
 		completedId := r.FormValue("completed_test_id")
 		err := handler.processor.DeleteCompletedTest(testId,userId,completedId)
 		if err != nil {
@@ -201,11 +205,13 @@ func (handler *SubjectTestHandler) CompletedTest(w http.ResponseWriter, r *http.
 
 func (handler *SubjectTestHandler) CheckQuestion(w http.ResponseWriter, r *http.Request) {
 	var resp []models.QuestionCheckReq
+	var vars = mux.Vars(r)
+	test_id, user_id, subject_id := vars["test_id"], vars["user_id"], vars["subject_id"]
 	err := json.NewDecoder(r.Body).Decode(&resp)
 	if err != nil {
 		WrapError(w,err)
 	}
-	points, err := handler.processor.CheckQuestion(resp)
+	points, err := handler.processor.CheckQuestion(resp,test_id,user_id,subject_id)
 	if err != nil {
 		WrapError(w,err)
 		return

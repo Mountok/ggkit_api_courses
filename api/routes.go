@@ -28,9 +28,11 @@ func CreateRoute(
 	router.HandleFunc("/api/themes/{subject_id}", themeHandler.Themes).Methods(http.MethodGet)
 	router.HandleFunc("/api/themes", themeHandler.CreateTheme).Methods(http.MethodPost)
 
-	// TODO: Сделать эндпоинт для отображения всех пройденных уроков по id предмета
+	// ! Поиск пройденных тем
 	router.HandleFunc("/api/themes/complete/{user_id}/{subject_id}",
 		themeHandler.GetAllCompleted).Methods(http.MethodGet)
+
+		
 
 	////////////////////////////////////////////////////////
 	// ! Эндпоинты для уроков
@@ -81,7 +83,7 @@ func CreateRoute(
 		http.MethodPut,
 	)
 
-	router.HandleFunc("/api/test/check/{question_id}", testHandler.CheckQuestion).Methods(
+	router.HandleFunc("/api/test/check/{test_id}/{subject_id}/{user_id}", testHandler.CheckQuestion).Methods(
 		http.MethodPost,
 	)
 
