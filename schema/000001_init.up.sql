@@ -196,9 +196,29 @@ CREATE TABLE test_questions (
 );
 
 INSERT INTO test_questions(question,options,answer,test_id) VALUES ('Какой оператор позволяет делать выборку из таблицы?','INSERT INTO;SELECT;UPDATE;DELETE','SELECT',1);
+INSERT INTO test_questions(question,options,answer,test_id) VALUES ('Какой оператор позволяет делать удалять из таблицы данные?','INSERT INTO;SELECT;UPDATE;DELETE','DELETE',1);
 INSERT INTO test_questions(question,options,answer,test_id) VALUES ('Тест вопрос?','INSERT INTO;SELECT;UPDATE;DELETE','SELECT',2);
 
-
+-- SELECT 
+--     dt.id, 
+--     dt.test_id, 
+--     st.subject_id, 
+--     dt.user_id, 
+--     dt.points,
+--     COUNT(tq.id) AS question_count
+-- FROM 
+--     done_test dt 
+-- JOIN 
+--     subject_test st ON st.id = dt.test_id  
+-- LEFT JOIN 
+--     test_questions tq ON tq.test_id = dt.test_id
+-- WHERE 
+--     dt.user_id = 'b43a1721-2bc3-4421-8e70-b7bd932ad802'
+--     AND st.subject_id = 1
+-- GROUP BY 
+--     dt.id, dt.test_id, st.subject_id, dt.user_id, dt.points
+-- ORDER BY 
+--     dt.test_id ASC;
 
 CREATE TABLE done_test (
        id serial PRIMARY KEY,

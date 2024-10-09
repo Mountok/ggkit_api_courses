@@ -7,10 +7,11 @@ type SubjectTest struct {
 }
 
 type TestQuestion struct {
-	Id       int    `json:"id" db:"id"`
-	Question string `json:"question" db:"question"`
-	Options  string `json:"options" db:"options"`
-	TestId   int    `json:"test_id" db:"test_id"`
+	Id        int    `json:"id" db:"id"`
+	Question  string `json:"question" db:"question"`
+	Options   string `json:"options" db:"options"`
+	TestId    int    `json:"test_id" db:"test_id"`
+	SubjectId int    `json:"subject_id" db:"subject_id"`
 }
 
 type CompletedTest struct {
@@ -20,11 +21,12 @@ type CompletedTest struct {
 	Points int    `json:"points" db:"points"`
 }
 type CompletedTestCheck struct {
-	Id        int    `json:"id" db:"id"`
-	TestId    int    `json:"test_id" db:"test_id"`
-	SubjectId int    `json:"subject_id" db:"subject_id"`
-	UserId    string `json:"user_id" db:"user_id"`
-	Points    int    `json:"points" db:"points"`
+	Id            int    `json:"id" db:"id"`
+	TestId        int    `json:"test_id" db:"test_id"`
+	SubjectId     int    `json:"subject_id" db:"subject_id"`
+	UserId        string `json:"user_id" db:"user_id"`
+	Points        int    `json:"points" db:"points"`
+	QuestionCount int    `json:"question_count" db:"question_count"`
 }
 
 type QuestionCheckReq struct {

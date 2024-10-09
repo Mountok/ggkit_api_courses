@@ -99,7 +99,7 @@ func (db *SubjectTestStorage) CreateQuestionForTest(testId, question, options, a
 
 func (db *SubjectTestStorage) ReadQuestionForTest(testId string) ([]models.TestQuestion, error) {
 	var questionsList []models.TestQuestion
-	query := "SELECT id, question, options, test_id FROM test_questions WHERE test_id=$1;"
+	query := "SELECT tq.id, tq.question, tq.options, tq.test_id, st.subject_id FROM test_questions tq JOIN subject_test st ON tq.test_id = st.id WHERE tq.test_id=$1;"
 	logrus.Infof("Запрос на получение вопросов для теста с id %s", testId)
 	err := pgxscan.Select(context.Background(), db.databasePool, &questionsList, query, testId)
 	if err != nil {
@@ -163,7 +163,28 @@ func (db *SubjectTestStorage) CreateCompletedTest(userId, testId string, points 
 func (db *SubjectTestStorage) ReadCompletedTest(subject_id int, userId string) ([]models.CompletedTestCheck, error) {
 	var completedTestId []models.CompletedTestCheck
 	logrus.Printf("Получение выполненых тестов для userId: %s по subjectID: %d", userId, subject_id)
-	query := "SELECT dt.id, dt.test_id, st.subject_id, dt.user_id, dt.points FROM done_test dt JOIN subject_test st ON st.id = dt.test_id  WHERE dt.user_id = $1 AND st.subject_id = $2;"
+	query := `
+	SELECT 
+		dt.id, 
+		dt.test_id, 
+		st.subject_id, 
+		dt.user_id, 
+		dt.points,
+		COUNT(tq.id) AS question_count
+	FROM 
+		done_test dt 
+	JOIN 
+		subject_test st ON st.id = dt.test_id  
+	LEFT JOIN 
+		test_questions tq ON tq.test_id = dt.test_id
+	WHERE 
+		dt.user_id = $1
+		AND st.subject_id = $2
+	GROUP BY 
+		dt.id, dt.test_id, st.subject_id, dt.user_id, dt.points
+	ORDER BY 
+		dt.test_id ASC;
+	`
 	err := pgxscan.Select(context.Background(), db.databasePool, &completedTestId, query, userId, subject_id)
 	if err != nil {
 		return completedTestId, err
@@ -174,7 +195,7 @@ func (db *SubjectTestStorage) ReadCompletedTest(subject_id int, userId string) (
 func (db *SubjectTestStorage) ReadCompletedTestById(subject_id int, userId, test_id string) ([]models.CompletedTestCheck, error) {
 	var completedTestId []models.CompletedTestCheck
 	logrus.Printf("Получение выполненых тестов для userId: %s по subjectID: %d", userId, subject_id)
-	query := "SELECT dt.id, dt.test_id, st.subject_id, dt.user_id, dt.points FROM done_test dt JOIN subject_test st ON st.id = dt.test_id  WHERE dt.user_id = $1 AND st.subject_id = $2 AND st.id = $3;"
+	query := "SELECT dt.id, dt.test_id, st.subject_id, dt.user_id, dt.points FROM done_test dt JOIN subject_test st ON st.id = dt.test_id  WHERE dt.user_id = $1 AND st.subject_id = $2 AND st.id = $3 ORDER BY dt.test_id ASC;"
 	err := pgxscan.Select(context.Background(), db.databasePool, &completedTestId, query, userId, subject_id, test_id)
 	if err != nil {
 		return completedTestId, err

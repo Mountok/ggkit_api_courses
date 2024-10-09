@@ -18,7 +18,7 @@ func CreateRoute(
 	router := mux.NewRouter()
 
 	// ! Эндпоинты для тем
-	
+
 	router.HandleFunc("/api/subject", subjectHandler.List).Methods(http.MethodGet)
 	router.HandleFunc("/api/subject/{id}", subjectHandler.One).Methods(http.MethodGet)
 	router.HandleFunc("/api/subject", subjectHandler.UploadSubject).Methods(http.MethodPost)
@@ -31,8 +31,6 @@ func CreateRoute(
 	// ! Поиск пройденных тем
 	router.HandleFunc("/api/themes/complete/{user_id}/{subject_id}",
 		themeHandler.GetAllCompleted).Methods(http.MethodGet)
-
-		
 
 	////////////////////////////////////////////////////////
 	// ! Эндпоинты для уроков
@@ -86,9 +84,11 @@ func CreateRoute(
 	router.HandleFunc("/api/test/check/{test_id}/{subject_id}/{user_id}", testHandler.CheckQuestion).Methods(
 		http.MethodPost,
 	)
+	router.HandleFunc("/api/test/result/{user_id}/{subject_id}", testHandler.CompletedTestBySubject).Methods(
+		http.MethodGet,
+	)
 
 	router.HandleFunc("/api/test/result/{test_id}", testHandler.CompletedTest).Methods(
-		http.MethodGet,
 		http.MethodPost,
 		http.MethodDelete,
 		http.MethodPut,

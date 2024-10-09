@@ -64,7 +64,6 @@ func (cfg *Cfg) NewRedisClient() *redis.Client {
 		Password: "ndauicaHkkzYaCjcFlZZcaMzeHZetGWk", // пароль, если установлен
 		DB:       0,                                  // номер базы данных
 	})
-
 	// Проверка подключения
 	log.Println("Connecting to Redis")
 	_, err := rdb.Ping(context.Background()).Result()
