@@ -66,6 +66,14 @@ func (db *SubjectCache) UploadStorage(title, description,image_url string) (int,
 }
 
 
+func (db *SubjectCache) UpdateSubject(subject_id,title, description,image_url string) (int, error) {
+	return db.storage.UpdateSubject(subject_id,title, description,image_url)
+}
+
+func (db *SubjectCache) DeleteSubject(id string) error {
+	return db.storage.DeleteSubject(id)
+}
+
 func (db *SubjectCache) GetSubjectById(num int) ([]models.Subject, error) {
 	var findSubject []models.Subject
 	cachedSubject, err := db.redis.Get(context.Background(),fmt.Sprintf("subject_id_%d",num)).Result()

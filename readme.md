@@ -34,6 +34,10 @@ docker  run --name=go-praxis-back -p 80:8080 go-praxis
 migrate -path ./schema -database 'postgres://postgres:admin@localhost:5436/postgres?sslmode=disable' up  
 ```
 
+```bash
+   docker run --name my-redis -d -p 6379:6379 redis
+   
+```
 
 # API DOC
 

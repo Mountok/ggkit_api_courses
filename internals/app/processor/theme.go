@@ -38,6 +38,25 @@ func (process *ThemesProcessor) ThemesBySubjectId(req_vars map[string]string) ([
 
 }
 
+func (process *ThemesProcessor) UpdateTheme(themeIdString,themeTitle, themeDescription string) (int, error) {
+	themeIdInt, err := strconv.Atoi(themeIdString)
+	if err != nil {
+		return 0, err
+	}
+	return process.storage.UpdateTheme(themeIdInt,themeTitle,themeDescription)
+
+
+}
+
+func (process *ThemesProcessor) DeleteTheme(theme_id string) error {
+	themeId, err := strconv.Atoi(theme_id)
+	if err != nil {
+		return err
+	}
+	return process.storage.DeleteTheme(themeId)
+}
+
+
 func (process *ThemesProcessor) GetAllCompeted(user_id, subject_id string) ([]int, error) {
 	return process.storage.GetAllCompleted(user_id, subject_id)
 }

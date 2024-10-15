@@ -38,3 +38,10 @@ func (process *SubjectProcessor) UploadSubject(title, description, image_url str
 	}
 	return process.cache.UploadStorage(title, description, image_url)
 }
+
+func (process *SubjectProcessor) UpdateSubject(subject_id,title, description, image_url string) (int, error) {
+	return process.cache.UpdateSubject(subject_id,title, description, image_url)
+}
+func (process *SubjectProcessor) DeleteSubject(id string) error {
+	return process.cache.DeleteSubject(id)
+}

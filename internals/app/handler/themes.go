@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"ggkit_learn_service/internals/app/processor"
 	"net/http"
+	// "strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -60,6 +61,42 @@ func (handler *ThemesHandler) CreateTheme(w http.ResponseWriter, r *http.Request
 
 	WrapOK(w, m)
 
+}
+
+func (handler *ThemesHandler) UpdateTheme(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	themeIdStrin := vars["theme_id"]
+	themeTitle := r.FormValue("theme_title")
+	themeDescription := r.FormValue("theme_description")
+	id, err := handler.processor.UpdateTheme(themeIdStrin,themeTitle,themeDescription)
+	if err != nil {
+		WrapError(w,err)
+		return 
+	}
+
+	var m = map[string ]interface{}{
+		"result": "OK",
+		"data": id,
+	}
+
+	WrapOK(w,m)
+	
+}
+
+func (handler *ThemesHandler) DeleteTheme(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	theme_id := vars["theme_id"]
+	err := handler.processor.DeleteTheme(theme_id)
+	if err != nil {
+		WrapError(w, err)
+		return
+	}
+	var m = map[string]interface{}{
+		"result": "OK",
+		"data":   fmt.Sprintf("тема с id=%s удалена", theme_id),
+	}
+
+	WrapOK(w, m)
 }
 
 func (handler *ThemesHandler) Themes(w http.ResponseWriter, r *http.Request) {

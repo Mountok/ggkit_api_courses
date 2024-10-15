@@ -88,6 +88,8 @@ func (server *AppServer) Serve() {
 			handlers.AllowedMethods([]string{
 				"GET",
 				"POST",
+				"PUT",
+				"DELETE",
 			}),
 			handlers.AllowedHeaders([]string{
 				"X-Requested-With",

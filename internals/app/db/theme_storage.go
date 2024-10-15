@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"ggkit_learn_service/internals/app/models"
 
 	"github.com/georgysavva/scany/pgxscan"
@@ -36,6 +37,34 @@ func (db *ThemesStorage) GetThemesBySubjectId(id int) (result []models.Theme) {
 	}
 	return result
 }
+
+func (db *ThemesStorage) UpdateTheme(themeId int, themeTitle, themeDescription string) (int, error) {
+	var updatedThemeId int
+	var argumentString string
+	if themeTitle != "" {
+		argumentString += fmt.Sprintf(", title='%s'", themeTitle)
+	}
+	if themeDescription != "" {
+		argumentString += fmt.Sprintf(", description='%s'", themeDescription)
+	}
+	query := fmt.Sprintf("UPDATE themes SET id=$1  %s WHERE id=$2 RETURNING id;", argumentString)
+
+	row := db.databasePool.QueryRow(context.Background(),query,themeId,themeId)
+	err := row.Scan(&updatedThemeId)
+	if  err != nil {
+		return 0, err
+	}
+	return updatedThemeId, nil 
+
+
+}
+
+func (db *ThemesStorage) DeleteTheme(theme_id int) error {
+	query := "DELETE FROM themes WHERE id=$1;"
+	_, err := db.databasePool.Exec(context.Background(),query,theme_id)
+	return err
+}
+
 
 func (db *ThemesStorage) GetAllCompleted(user_id, subject_id string) ([]int, error) {
 	var result []int
