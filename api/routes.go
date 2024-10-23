@@ -64,9 +64,9 @@ func CreateRoute(
 	// * Получение рейтинга пользователя
 	router.HandleFunc("/api/profiles", userHandler.Rating).Methods(http.MethodGet)
 
-	// * Для отметки пройденной темы для пользователя по id
+	// *  пройденной темы для пользователя по id
 	router.HandleFunc("/api/profile/subject/{user_id}", userHandler.LastSubject).Methods(http.MethodGet)
-	// * Получения всех пройденных тем по id пользователя и id курса
+	// *  установка последний темы
 	router.HandleFunc("/api/profile/subject/{user_id}/{course_id}", userHandler.LastSubject).Methods(http.MethodPost)
 
 	////////////////////////////////////////////////////////
@@ -96,6 +96,13 @@ func CreateRoute(
 		http.MethodPost,
 		http.MethodDelete,
 		http.MethodPut,
+	)
+
+	// ! ПОЛУЧЕНИЕ СЕРТИФИКАТА
+	router.HandleFunc("/api/certificate/{user_id}/{subject_id}", subjectHandler.Certificate).Methods(
+		http.MethodGet,
+		http.MethodPost,
+		http.MethodDelete,
 	)
 
 	// ! Эндпоинт для публичного доступа к изображениям)

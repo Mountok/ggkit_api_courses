@@ -2,8 +2,10 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"ggkit_learn_service/internals/app/models"
+	"ggkit_learn_service/internals/utils"
 
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -74,9 +76,53 @@ func (db *SubjectStorage) GetSubjectById(id int) ([]models.Subject, error) {
 
 }
 
-
 func (db *SubjectStorage) DeleteSubject(id string) error {
 	query := "DELETE FROM subjects WHERE id=$1"
-	_, err := db.databasePool.Exec(context.Background(),query,id)
+	_, err := db.databasePool.Exec(context.Background(), query, id)
 	return err
+}
+
+func (db *SubjectStorage) Certificate(subjectId, userId string) error {
+	allComletedThemes, err := utils.GetAllCompletedThemes(db.databasePool, userId, subjectId)
+	if err != nil {
+		return err
+	}
+	allThemes, err := utils.GetAllThemes(db.databasePool, subjectId)
+	if err != nil {
+		return err
+	}
+
+	if len(allComletedThemes) != len(allThemes) {
+		return errors.New("все темы не пройденый")
+	} else {
+		fmt.Println(allComletedThemes)
+		fmt.Println(allThemes)
+		allComletedTests, err := utils.GetAllCompletedTest(db.databasePool, userId, subjectId)
+		if err != nil {
+			return err
+		}
+		allTestIds, err := utils.GetAllTestBySubject(db.databasePool, subjectId)
+		if err != nil {
+			return err
+		}
+		fmt.Println(allComletedTests)
+		if len(allComletedTests) == len(allTestIds) {
+			for i := 0; i < len(allComletedTests); i++ {
+				points := float64(allComletedTests[i].Points)
+				questions := float64(allComletedTests[i].QuestionCount)
+				if (points/questions)*100 >= 90 {
+					fmt.Printf("Тест выполнен (id теста: %d)\n", allComletedTests[i].TestId)
+
+				} else {
+					fmt.Printf("Тест не выполнен (id теста: %d)\n", allComletedTests[i].TestId)
+					return errors.New("тесты выполнены неверно")
+				}
+			}
+			return nil
+		} else {
+			return errors.New("не все тесты пройдены")
+		}
+		return err
+	}
+
 }

@@ -107,3 +107,7 @@ func (db *SubjectCache) GetSubjectById(num int) ([]models.Subject, error) {
 		return findSubject, err
 	}
 }
+
+func (db *SubjectCache) Certificate(subjectId, userId string) error {
+	return db.storage.Certificate(subjectId, userId)
+}

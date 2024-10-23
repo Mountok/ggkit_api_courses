@@ -1,3 +1,4 @@
+drop table certificates;
 drop table done_lessons;
 drop table lessons;
 drop table last_subjects;

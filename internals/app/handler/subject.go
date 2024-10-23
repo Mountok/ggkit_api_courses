@@ -188,3 +188,27 @@ func (handler *SubjectHandler) Image(w http.ResponseWriter, r *http.Request) {
 	}
 	WrapError(w, errors.New("Имя изображения не указано"))
 }
+
+
+func (handler *SubjectHandler) Certificate(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	subjectId := vars["subject_id"]
+	userId := vars["user_id"]
+	var m = map[string]interface{}{}
+	switch r.Method {
+	case http.MethodGet: 
+	err := handler.processor.Certificate(subjectId,userId)
+	if err != nil {
+		WrapError(w,err)
+		return
+	}
+	m = map[string]interface{}{
+		"result": "OK",
+		"courseDone": true,
+	}
+	}
+
+	WrapOK(w,m)
+	
+
+}
