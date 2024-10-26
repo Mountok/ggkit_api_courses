@@ -36,6 +36,14 @@ func (db *SubjectStorage) UploadStorage(title, description, image_url string) (i
 	query := "INSERT INTO subjects (title,description,image) VALUES ($1,$2,$3) RETURNING id;"
 	var id int
 	err := db.databasePool.QueryRow(context.Background(), query, title, description, image_url).Scan(&id)
+	if err != nil {
+		return id, err
+	}
+	query = "UPDATE subjects SET image=$1  WHERE id=$2;"
+	_, err = db.databasePool.Exec(context.Background(), query, fmt.Sprintf("%s%d.webp", image_url, id), id)
+	if err != nil {
+		return id, err
+	}
 	return id, err
 }
 func (db *SubjectStorage) UpdateSubject(subject_id, title, description, image_url string) (int, error) {

@@ -71,14 +71,14 @@ func (handler *SubjectHandler) UploadSubject(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Создаем файл в публичной папке /images
-	image_url := "praxis" + header.Filename
+	image_url :=  "praxis_course_of_id_"
 
 	newSubjectId, err := handler.processor.UploadSubject(title, description, image_url)
 	if err != nil {
 		WrapError(w, err)
 	}
-
+	// Создаем файл в публичной папке /images
+	image_url =  fmt.Sprintf("praxis_course_of_id_%d.webp",newSubjectId)
 	out, err := os.Create("./images/" + image_url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -129,7 +129,7 @@ func (handler *SubjectHandler) UpdateSubject(w http.ResponseWriter, r *http.Requ
 			return
 		}
 		// Создаем файл в публичной папке /images
-		image_url = "praxis" + header.Filename
+		image_url = "praxis_course_of_id_" + subject_id + ".webp"
 		defer file.Close()
 
 		newSubjectId, err = handler.processor.UpdateSubject(subject_id, title, description, image_url)
