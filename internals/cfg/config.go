@@ -3,7 +3,7 @@ package cfg
 import (
 	"context"
 	"fmt"
-	"os"
+	// "os"
 
 
 	"github.com/go-redis/redis/v8"
@@ -23,14 +23,14 @@ type Cfg struct {
 func LoadConfig() Cfg {
 	v := viper.New()
 	v.SetEnvPrefix("GGKIT_SERV")
-	// v.Set("PORT", "8080")
+	v.Set("PORT", "8080")
 	// v.Set("DBNAME", "postgres")
 	// v.Set("DBUSER", "postgres")
 	// v.Set("DBPASS", "admin")
 	// v.Set("DBHOST", "127.0.0.1")
 	// v.Set("DBPORT", "5436")
 
-	v.Set("PORT", os.Getenv("PORT"))
+	// v.Set("PORT", os.Getenv("PORT"))
 	v.Set("DBNAME", "railway")
 	v.Set("DBUSER", "postgres")
 	v.Set("DBPASS", "JMBBpmeyasyiQWhdpLxjESwTwsocyehv")

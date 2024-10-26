@@ -4,10 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"ggkit_learn_service/internals/app/processor"
-	"github.com/sirupsen/logrus"
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
 )
@@ -94,7 +95,7 @@ func (handler *UserHandler) UploadAvatar(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Создаем файл в публичной папке /images
-	image_url := "avatar_for_user_" + userId + header.Filename
+	image_url := "avatar_for_user_" + userId + ".webp"
 
 	err = handler.processor.UploadAvatar(userId, image_url)
 	if err != nil {
