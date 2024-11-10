@@ -110,7 +110,7 @@ func (db *UserStorage) GetPoint(user_id, theme_id string) error {
 
 func (db *UserStorage) Rating() ([]models.RatingUser, error) {
 	var lists []models.RatingUser
-	var query string = "SELECT p.user_id, p.full_name, p.image, p.score FROM users u JOIN profiles p ON u.id = p.user_id ORDER BY p.score DESC;"
+	var query string = "SELECT p.user_id, p.full_name, p.image, p.score FROM users u JOIN profiles p ON u.id = p.user_id ORDER BY p.score DESC LIMIT 4;"
 	err := pgxscan.Select(context.Background(), db.databasePool, &lists, query)
 	return lists, err
 }

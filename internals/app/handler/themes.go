@@ -19,7 +19,7 @@ func NewThemesHandler(processor *processor.ThemesProcessor) *ThemesHandler {
 	return handler
 }
 
-func (handler *ThemesHandler) GetAllCompleted(w http.ResponseWriter, r *http.Request) {
+func (handler *ThemesHandler) GetAllCompletedBySubject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	user_id := vars["user_id"]
 	subject_id := vars["subject_id"]
@@ -29,7 +29,7 @@ func (handler *ThemesHandler) GetAllCompleted(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	listsOfCompletedThemes, err := handler.processor.GetAllCompeted(user_id, subject_id)
+	listsOfCompletedThemes, err := handler.processor.GetAllCompletedBySubject(user_id, subject_id)
 
 	if err != nil {
 		WrapError(w, err)
@@ -41,6 +41,29 @@ func (handler *ThemesHandler) GetAllCompleted(w http.ResponseWriter, r *http.Req
 	}
 	WrapOK(w, m)
 }
+
+func (handler *ThemesHandler) GetAllCompleted (w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	user_id := vars["user_id"]
+
+	if user_id == ""{
+		WrapError(w, fmt.Errorf("not valid user_id"))
+		return
+	}
+
+	listsOfCompletedThemes, err := handler.processor.GetAllCompeted(user_id)
+
+	if err != nil {
+		WrapError(w, err)
+		return
+	}
+	var m = map[string]interface{}{
+		"results": "ok",
+		"data":    len(listsOfCompletedThemes),
+	}
+	WrapOK(w, m)
+}
+
 
 func (handler *ThemesHandler) CreateTheme(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")

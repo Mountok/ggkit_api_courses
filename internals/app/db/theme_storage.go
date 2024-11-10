@@ -66,7 +66,7 @@ func (db *ThemesStorage) DeleteTheme(theme_id int) error {
 }
 
 
-func (db *ThemesStorage) GetAllCompleted(user_id, subject_id string) ([]int, error) {
+func (db *ThemesStorage) GetAllCompletedBySubject(user_id, subject_id string) ([]int, error) {
 	var result []int
 	query := "SELECT dl.theme_id FROM done_lessons dl WHERE user_id = $1 AND theme_id IN (SELECT id FROM themes WHERE subject_id = $2)"
 	err := pgxscan.Select(context.Background(), db.databasePool, &result, query, user_id, subject_id)
@@ -78,5 +78,19 @@ func (db *ThemesStorage) GetAllCompleted(user_id, subject_id string) ([]int, err
 	return result, nil
 }
 
+func (db *ThemesStorage) GetAllCompeted(user_id string ) ([]int, error) {
+	var result []int
+	query := "SELECT dl.theme_id FROM done_lessons dl WHERE dl.user_id = $1"
+	err := pgxscan.Select(context.Background(), db.databasePool, &result, query, user_id)
+	if err != nil {
+		log.Errorf("Ошибка при sql запросе: \n %v", err)
+		return nil, err
+	}
+	log.Print(result)
+	if result == nil {
+		return []int{}, nil
+	}
+	return result, nil
+}
 // SELECT dl.theme_id FROM done_lessons dl WHERE user_id = 'b43a1721-2bc3-4421-8e70-b7bd932ad802' AND theme_id IN (SELECT id FROM themes WHERE subject_id = 2);
 // SELECT dl.theme_id FROM done_lessons dl JOIN themes t ON t.id = dl.theme_id AND t.subject_id = 2 AND dl.user_id = 'b43a1721-2bc3-4421-8e70-b7bd932ad802';

@@ -57,6 +57,10 @@ func (process *ThemesProcessor) DeleteTheme(theme_id string) error {
 }
 
 
-func (process *ThemesProcessor) GetAllCompeted(user_id, subject_id string) ([]int, error) {
-	return process.storage.GetAllCompleted(user_id, subject_id)
+func (process *ThemesProcessor) GetAllCompletedBySubject(user_id, subject_id string) ([]int, error) {
+	return process.storage.GetAllCompletedBySubject(user_id, subject_id)
+}
+
+func (process *ThemesProcessor) GetAllCompeted(user_id string) ([]int, error) {
+	return process.storage.GetAllCompeted(user_id)
 }

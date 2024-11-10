@@ -32,8 +32,12 @@ func CreateRoute(
 	router.HandleFunc("/api/themes/{theme_id}", themeHandler.UpdateTheme).Methods(http.MethodPost)
 	router.HandleFunc("/api/themes/{theme_id}", themeHandler.DeleteTheme).Methods(http.MethodDelete)
 
-	// ! Поиск пройденных тем
+	// ! Поиск пройденных тем для пользователя по предмету
 	router.HandleFunc("/api/themes/complete/{user_id}/{subject_id}",
+		themeHandler.GetAllCompletedBySubject).Methods(http.MethodGet)
+	
+	// ! Поиск пройденных тем для пользователя общее количество
+	router.HandleFunc("/api/themes/complete/{user_id}",
 		themeHandler.GetAllCompleted).Methods(http.MethodGet)
 
 	////////////////////////////////////////////////////////

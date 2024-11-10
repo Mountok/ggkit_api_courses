@@ -70,7 +70,7 @@ func (db *LoginStorage) CreateProfileForUser(user models.User) (string, error) {
 		return "", err
 	}
 	log.Infof("Создание профиля для пользователя")
-	_, err = db.databasePool.Exec(context.Background(), query, currentUser[0].Id, "-", "-", "-", "admin.png")
+	_, err = db.databasePool.Exec(context.Background(), query, currentUser[0].Id, "нажмите что бы изменить описание", "-", "Новый пользователь", "admin.png")
 	if err != nil {
 		return "", err
 	}
