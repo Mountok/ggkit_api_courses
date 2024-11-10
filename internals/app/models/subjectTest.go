@@ -1,9 +1,9 @@
 package models
 
 type SubjectTest struct {
-	Id        int    `json:"id" db:"id"`
-	Title     string `json:"title" db:"title"`
-	SubjectId int    `json:"subject_id" db:"subject_id"`
+	Id             int    `json:"id" db:"id"`
+	Title          string `json:"title" db:"title"`
+	SubjectId      int    `json:"subject_id" db:"subject_id"`
 }
 
 type TestQuestion struct {

@@ -26,7 +26,6 @@ func (process *ThemesProcessor) CreateTheme(title, description, subject_id strin
 		return 0, errors.New("неверно передано значение subject_id")
 	}
 	return process.storage.CreateTheme(title, description, subject_id)
-
 }
 
 func (process *ThemesProcessor) ThemesBySubjectId(req_vars map[string]string) ([]models.Theme, error) {

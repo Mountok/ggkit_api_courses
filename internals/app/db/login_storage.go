@@ -21,8 +21,8 @@ func NewLoginStorage(databasePool *pgxpool.Pool) *LoginStorage {
 	return storage
 }
 
-func (db *LoginStorage) CreateUser(user models.User) (string, error) {
-	_, err := db.GetUserByEmail(user)
+func (db *LoginStorage) CreateUser(user models.UserCreate) (string, error) {
+	_, err := db.GetUserByEmail(user.Email)
 	if err == nil {
 		log.Errorf("Такой пользователь уже есть: \n %v", err)
 		return "", errors.New("пользователь с таким email существует")
@@ -47,9 +47,9 @@ func (db *LoginStorage) CreateUser(user models.User) (string, error) {
 	return user_id, nil
 }
 
-func (db *LoginStorage) GetUserByEmail(user models.User) (res []models.User, err error) {
+func (db *LoginStorage) GetUserByEmail(email string) (res []models.User, err error) {
 	query := "SELECT id, email, password, role, create_date FROM users WHERE email = $1"
-	err = pgxscan.Select(context.Background(), db.databasePool, &res, query, user.Email)
+	err = pgxscan.Select(context.Background(), db.databasePool, &res, query, email)
 	if err != nil {
 		log.Errorf("Ошибка при sql запросе: \n %v", err)
 		return res, err
@@ -62,15 +62,15 @@ func (db *LoginStorage) GetUserByEmail(user models.User) (res []models.User, err
 	return res, nil
 }
 
-func (db *LoginStorage) CreateProfileForUser(user models.User) (string, error) {
+func (db *LoginStorage) CreateProfileForUser(user models.UserCreate) (string, error) {
 	query := "insert into profiles (user_id,description,phone,full_name, image) values ($1,$2,$3,$4,$5);"
 	log.Infof("Получение пользователя по почте")
-	currentUser, err := db.GetUserByEmail(user)
+	currentUser, err := db.GetUserByEmail(user.Email)
 	if err != nil {
 		return "", err
 	}
 	log.Infof("Создание профиля для пользователя")
-	_, err = db.databasePool.Exec(context.Background(), query, currentUser[0].Id, "нажмите что бы изменить описание", "-", "Новый пользователь", "admin.png")
+	_, err = db.databasePool.Exec(context.Background(), query, currentUser[0].Id, "нажмите что бы изменить описание", "-", user.Username, "admin.png")
 	if err != nil {
 		return "", err
 	}

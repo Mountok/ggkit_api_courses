@@ -21,7 +21,7 @@ func NewLoginhandler(processor *processor.LoginProcessor) *LoginHandler {
 }
 
 func (handler *LoginHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var user models.User
+	var user models.UserCreate
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		WrapError(w, err)

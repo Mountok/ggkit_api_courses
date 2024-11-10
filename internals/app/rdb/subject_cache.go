@@ -61,13 +61,13 @@ func (db *SubjectCache) GetAllSubjects() ([]models.Subject, error) {
 }
 
 
-func (db *SubjectCache) UploadStorage(title, description,image_url string) (int, error) {
-	return db.storage.UploadStorage(title, description,image_url)
+func (db *SubjectCache) UploadStorage(title, description, image_url, is_certificated string) (int, error) {
+	return db.storage.UploadStorage(title, description,image_url,is_certificated)
 }
 
 
-func (db *SubjectCache) UpdateSubject(subject_id,title, description,image_url string) (int, error) {
-	return db.storage.UpdateSubject(subject_id,title, description,image_url)
+func (db *SubjectCache) UpdateSubject(subject_id,title, description,image_url, is_certificated string) (int, error) {
+	return db.storage.UpdateSubject(subject_id,title, description,image_url,is_certificated)
 }
 
 func (db *SubjectCache) DeleteSubject(id string) error {

@@ -113,5 +113,9 @@ func CreateRoute(
 	// ! НЕ ТРОГАТЬ Я НЕ ЗНАЮ КАК НО ОНО РАБОТАЕТ
 	router.HandleFunc("/images", subjectHandler.Image).Methods(http.MethodGet)
 
+
+
+	router.HandleFunc("/videos", subjectHandler.Video).Methods(http.MethodGet)
+
 	return router
 }

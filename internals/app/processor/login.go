@@ -21,7 +21,7 @@ func NewLoginProcessor(storage *db.LoginStorage) *LoginProcessor {
 	return process
 }
 
-func (processor *LoginProcessor) CreateUser(user models.User) (models.User, error) {
+func (processor *LoginProcessor) CreateUser(user models.UserCreate) (models.User, error) {
 	currentTime := time.Now()
 
 	user.CreateDate = fmt.Sprintf("%.2d.%.2d.%d-%.2d:%.2d", currentTime.Day(), currentTime.Month(), currentTime.Year(), currentTime.Hour(), currentTime.Minute())
@@ -35,7 +35,7 @@ func (processor *LoginProcessor) CreateUser(user models.User) (models.User, erro
 		return models.User{}, err
 	}
 
-	findUser, err := processor.storage.GetUserByEmail(user)
+	findUser, err := processor.storage.GetUserByEmail(user.Email)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -44,7 +44,7 @@ func (processor *LoginProcessor) CreateUser(user models.User) (models.User, erro
 
 func (processor *LoginProcessor) Auth(user models.User) (models.User, error) {
 	// vadition
-	findUser, err := processor.storage.GetUserByEmail(user)
+	findUser, err := processor.storage.GetUserByEmail(user.Email)
 	if err != nil {
 		return models.User{}, errors.New("такого пользователя не сущетвует")
 	}

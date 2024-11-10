@@ -8,6 +8,15 @@ type User struct {
 	CreateDate string `json:"create_date"`
 }
 
+type UserCreate struct {
+	Id         string `json:"id"`
+	Username         string `json:"username"`
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+	Role       string `json:"role"`
+	CreateDate string `json:"create_date"`
+}
+
 type ValidateUser struct {
 	Id   string `json:"id"`
 	Role string `json:"role"`

@@ -24,7 +24,7 @@ func NewSubjectStorage(pool *pgxpool.Pool) *SubjectStorage {
 
 func (db *SubjectStorage) GetAllSubjects() ([]models.Subject, error) {
 	var result []models.Subject
-	query := "SELECT id, title, image, description FROM subjects;"
+	query := "SELECT id, title, image, description, iscertificated FROM subjects;"
 	err := pgxscan.Select(context.Background(), db.databasePool, &result, query)
 	if err != nil {
 		return result, err
@@ -32,10 +32,10 @@ func (db *SubjectStorage) GetAllSubjects() ([]models.Subject, error) {
 	return result, nil
 }
 
-func (db *SubjectStorage) UploadStorage(title, description, image_url string) (int, error) {
-	query := "INSERT INTO subjects (title,description,image) VALUES ($1,$2,$3) RETURNING id;"
+func (db *SubjectStorage) UploadStorage(title, description, image_url, is_certificated string) (int, error) {
+	query := "INSERT INTO subjects (title,description,image,iscertificated) VALUES ($1,$2,$3,$4) RETURNING id;"
 	var id int
-	err := db.databasePool.QueryRow(context.Background(), query, title, description, image_url).Scan(&id)
+	err := db.databasePool.QueryRow(context.Background(), query, title, description, image_url,is_certificated).Scan(&id)
 	if err != nil {
 		return id, err
 	}
@@ -46,7 +46,7 @@ func (db *SubjectStorage) UploadStorage(title, description, image_url string) (i
 	}
 	return id, err
 }
-func (db *SubjectStorage) UpdateSubject(subject_id, title, description, image_url string) (int, error) {
+func (db *SubjectStorage) UpdateSubject(subject_id,title, description,image_url, is_certificated string) (int, error) {
 	var updatedQuestionId int
 	var argumentString string
 	if title != "" {
@@ -57,6 +57,9 @@ func (db *SubjectStorage) UpdateSubject(subject_id, title, description, image_ur
 	}
 	if image_url != "" {
 		argumentString += fmt.Sprintf(", image='%s'", image_url)
+	}
+	if is_certificated != "" {
+		argumentString += fmt.Sprintf(", iscertificated='%s'", is_certificated)
 	}
 	query := fmt.Sprintf("UPDATE subjects SET id=$1 %s WHERE id=$2 RETURNING id;", argumentString)
 
@@ -72,7 +75,7 @@ func (db *SubjectStorage) UpdateSubject(subject_id, title, description, image_ur
 }
 
 func (db *SubjectStorage) GetSubjectById(id int) ([]models.Subject, error) {
-	query := "SELECT id, title, image, description FROM subjects WHERE id = $1;"
+	query := "SELECT id, title, image, description,iscertificated FROM subjects WHERE id = $1;"
 
 	var result []models.Subject
 	err := pgxscan.Select(context.Background(), db.databasePool, &result, query, id)
@@ -130,7 +133,6 @@ func (db *SubjectStorage) Certificate(subjectId, userId string) error {
 		} else {
 			return errors.New("не все тесты пройдены")
 		}
-		return err
 	}
 
 }

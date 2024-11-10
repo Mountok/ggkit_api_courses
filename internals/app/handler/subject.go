@@ -56,6 +56,8 @@ func (handler *SubjectHandler) UploadSubject(w http.ResponseWriter, r *http.Requ
 	// Получаем поля title и description из тела запроса
 	title := r.FormValue("title")
 	description := r.FormValue("description")
+	is_certificated := r.FormValue("iscertificated")
+	
 
 	// Получаем файл из поля image
 	file, header, err := r.FormFile("image")
@@ -73,7 +75,7 @@ func (handler *SubjectHandler) UploadSubject(w http.ResponseWriter, r *http.Requ
 
 	image_url :=  "praxis_course_of_id_"
 
-	newSubjectId, err := handler.processor.UploadSubject(title, description, image_url)
+	newSubjectId, err := handler.processor.UploadSubject(title, description, image_url, is_certificated)
 	if err != nil {
 		WrapError(w, err)
 	}
@@ -108,6 +110,8 @@ func (handler *SubjectHandler) UpdateSubject(w http.ResponseWriter, r *http.Requ
 	subject_id := r.FormValue("subject_id")
 	title := r.FormValue("title")
 	description := r.FormValue("description")
+	is_certificated := r.FormValue("iscertificated")
+
 	var image_url string
 	var newSubjectId int
 	// Получаем файл из поля image
@@ -118,9 +122,10 @@ func (handler *SubjectHandler) UpdateSubject(w http.ResponseWriter, r *http.Requ
 		logrus.Error(err)
 		// WrapError(w, err)
 		// return
-		newSubjectId, err = handler.processor.UpdateSubject(subject_id, title, description, image_url)
+		newSubjectId, err = handler.processor.UpdateSubject(subject_id, title, description, image_url,is_certificated)
 		if err != nil {
 			WrapError(w, err)
+			return
 		}
 	} else {
 		// Проверяем размер файла
@@ -132,7 +137,7 @@ func (handler *SubjectHandler) UpdateSubject(w http.ResponseWriter, r *http.Requ
 		image_url = "praxis_course_of_id_" + subject_id + ".webp"
 		defer file.Close()
 
-		newSubjectId, err = handler.processor.UpdateSubject(subject_id, title, description, image_url)
+		newSubjectId, err = handler.processor.UpdateSubject(subject_id, title, description, image_url,is_certificated)
 		if err != nil {
 			WrapError(w, err)
 		}
@@ -189,7 +194,15 @@ func (handler *SubjectHandler) Image(w http.ResponseWriter, r *http.Request) {
 	WrapError(w, errors.New("Имя изображения не указано"))
 }
 
-
+func (handler *SubjectHandler) Video(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+	videoName := queryParams.Get("id")
+	if videoName != "" {
+		imagePath := "./videos/" + videoName
+		WrapOKImage(w, imagePath)
+	}
+	WrapError(w, errors.New("Имя видео не указано"))
+}
 func (handler *SubjectHandler) Certificate(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	subjectId := vars["subject_id"]
