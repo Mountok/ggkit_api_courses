@@ -223,7 +223,7 @@ CREATE TABLE done_test (
        FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-INSERT INTO done_test(test_id,user_id,points) VALUES (1,'b43a1721-2bc3-4421-8e70-b7bd932ad802',1);
+-- INSERT INTO done_test(test_id,user_id,points) VALUES (1,'b43a1721-2bc3-4421-8e70-b7bd932ad802',1);
 -- INSERT INTO done_test(test_id,user_id,points) VALUES (2,'b43a1721-2bc3-4421-8e70-b7bd932ad802',1);
 
 

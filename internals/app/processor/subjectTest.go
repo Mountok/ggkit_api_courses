@@ -91,3 +91,10 @@ func (processor *SubjectTestProcessor) CheckQuestion(answers []models.QuestionCh
 	}
 	return processor.storage.CheckQuestion(answers,test_id,user_id,subjectIDInt)
 }
+
+
+// --------------------  ПОЛУЧЕНИЕ ВСЕХ ТЕСТОВ
+
+func (processor *SubjectTestProcessor) GetAllCompleted(user_id string) (int, error) {
+	return processor.storage.GetAllCompleted(user_id)
+}

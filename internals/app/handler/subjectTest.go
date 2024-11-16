@@ -20,6 +20,30 @@ func NewSubjectTestHandler(processor *processor.SubjectTestProcessor) *SubjectTe
 	return handler
 }
 
+
+func (handler *SubjectTestHandler) GetAllCompleted(w http.ResponseWriter, r *http.Request) {
+	var (
+		vars = mux.Vars(r)
+		m = map[string]interface{}{}
+		user_id = vars["user_id"]
+	)
+
+	numOfTest, err := handler.processor.GetAllCompleted(user_id)
+	if err != nil {
+		WrapError(w,err)
+		return
+	}
+
+	m = map[string]interface{}  {
+		"result": numOfTest,
+	}
+
+	WrapOK(w,m)
+
+
+}	
+
+
 func (handler *SubjectTestHandler) TestsForSubject(w http.ResponseWriter, r *http.Request) {
 	var (
 		vars      = mux.Vars(r)

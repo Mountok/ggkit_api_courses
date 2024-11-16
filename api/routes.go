@@ -102,6 +102,12 @@ func CreateRoute(
 		http.MethodPut,
 	)
 
+	// * Общее колчество пройденных тестов
+
+	router.HandleFunc("/api/test/{user_id}",testHandler.GetAllCompleted).Methods(
+		http.MethodGet,
+	)
+
 	// ! ПОЛУЧЕНИЕ СЕРТИФИКАТА
 	router.HandleFunc("/api/certificate/{user_id}/{subject_id}", subjectHandler.Certificate).Methods(
 		http.MethodGet,

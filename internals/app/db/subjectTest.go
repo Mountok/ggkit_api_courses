@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"ggkit_learn_service/internals/app/models"
+	"log"
 
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -151,12 +152,31 @@ func (db *SubjectTestStorage) DeleteQuestionForTest(testId, questionId string) e
 
 func (db *SubjectTestStorage) CreateCompletedTest(userId, testId string, points int) (int, error) {
 	var completedTestId int
-	query := "INSERT INTO done_test(test_id,user_id,points) VALUES ($1,$2,$3) RETURNING id;"
-	row := db.databasePool.QueryRow(context.Background(), query, testId, userId, points)
-	err := row.Scan(&completedTestId)
+	tx, err := db.databasePool.Begin(context.Background())
 	if err != nil {
 		return 0, err
 	}
+
+	defer func ()  {
+		if err != nil {
+			tx.Rollback(context.Background())
+			log.Printf("Transaction rolback with error: %s \n", err)
+		} else {
+			err := tx.Commit(context.Background())
+			if err != nil {
+				log.Fatalf("Unable to commit transaction: %v", err)
+			}
+		}
+	}()
+
+	row := tx.QueryRow(context.Background(), "INSERT INTO done_test(test_id,user_id,points) VALUES ($1,$2,$3) RETURNING id;", testId, userId, points)
+	err = row.Scan(&completedTestId)
+
+	_, err = tx.Exec(context.Background(),"UPDATE profiles SET score=score+$1 WHERE user_id=$2",points,userId)
+	if err != nil {
+		return 0, err
+	}
+
 	return completedTestId, nil
 }
 
@@ -205,12 +225,45 @@ func (db *SubjectTestStorage) ReadCompletedTestById(subject_id int, userId, test
 
 func (db *SubjectTestStorage) UpdateCompletedTest(testId, userId string, points int) (int, error) {
 	var updatedTestId int
-	query := "UPDATE done_test SET points=$1 WHERE user_id=$2 and test_id=$3 RETURNING id;"
-	row := db.databasePool.QueryRow(context.Background(), query, points, userId, testId)
-	err := row.Scan(&updatedTestId)
+
+	tx, err := db.databasePool.Begin(context.Background())
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+			log.Printf("Transaction rolled back: %v", err)
+		} else {
+			err = tx.Commit(context.Background())
+			if err != nil {
+				log.Fatalf("Unable to commit transaction: %v", err)
+			}
+		}
+	}()
+
+	var lastPoints int = 0
+	row := tx.QueryRow(context.Background(), "SELECT points FROM done_test WHERE user_id=$1 and test_id=$2;", userId, testId)
+	err = row.Scan(&lastPoints)
+	if err != nil {
+		return lastPoints, err
+	}
+
+	_, err = tx.Exec(context.Background(), "UPDATE profiles SET score=score-$1 WHERE user_id=$2;", lastPoints, userId)
 	if err != nil {
 		return 0, err
 	}
+
+	query := "UPDATE done_test SET points=$1 WHERE user_id=$2 and test_id=$3 RETURNING id;"
+	row = tx.QueryRow(context.Background(), query, points, userId, testId)
+	err = row.Scan(&updatedTestId)
+	if err != nil {
+		return 0, err
+	}
+
+	_, err = tx.Exec(context.Background(),"UPDATE profiles SET score=score+$1 WHERE user_id=$2;",points,userId)
+	if err != nil {
+		return 0, err
+	}
+
 	return updatedTestId, nil
 }
 
@@ -260,3 +313,12 @@ func (db *SubjectTestStorage) CheckQuestion(answers []models.QuestionCheckReq, t
 }
 
 // ---------------------------  ВЫПОЛНЕНЫЕ ТЕСТЫ
+
+func (db *SubjectTestStorage) GetAllCompleted(user_id string) (int, error) {
+	var (
+		query string = "SELECT count(id) from done_test WHERE user_id=$1;"
+		num   int    = 0
+	)
+	row := db.databasePool.QueryRow(context.Background(), query, user_id)
+	return num, row.Scan(&num)
+}
