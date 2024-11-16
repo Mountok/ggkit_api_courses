@@ -3,6 +3,8 @@ package cfg
 import (
 	"context"
 	"fmt"
+	"os"
+
 	// "os"
 
 	"github.com/go-redis/redis/v8"
@@ -22,19 +24,19 @@ type Cfg struct {
 func LoadConfig() Cfg {
 	v := viper.New()
 	v.SetEnvPrefix("GGKIT_SERV")
-	v.Set("PORT", "8080")
-	v.Set("DBNAME", "postgres")
-	v.Set("DBUSER", "postgres")
-	v.Set("DBPASS", "admin")
-	v.Set("DBHOST", "127.0.0.1")
-	v.Set("DBPORT", "5436")
-
-	// v.Set("PORT", os.Getenv("PORT"))
-	// v.Set("DBNAME", "railway")
+	// v.Set("PORT", "8080")
+	// v.Set("DBNAME", "postgres")
 	// v.Set("DBUSER", "postgres")
-	// v.Set("DBPASS", "JMBBpmeyasyiQWhdpLxjESwTwsocyehv")
-	// v.Set("DBHOST", "junction.proxy.rlwy.net")
-	// v.Set("DBPORT", "38705")
+	// v.Set("DBPASS", "admin")
+	// v.Set("DBHOST", "127.0.0.1")
+	// v.Set("DBPORT", "5436")
+
+	v.Set("PORT", os.Getenv("PORT"))
+	v.Set("DBNAME", "railway")
+	v.Set("DBUSER", "postgres")
+	v.Set("DBPASS", "JMBBpmeyasyiQWhdpLxjESwTwsocyehv")
+	v.Set("DBHOST", "junction.proxy.rlwy.net")
+	v.Set("DBPORT", "38705")
 	v.AutomaticEnv()
 
 	var cfg Cfg
@@ -60,13 +62,13 @@ func (cfg *Cfg) GetDBConnetcUrl() string { //маленький метод дл�
 
 func (cfg *Cfg) NewRedisClient() *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379", // адрес вашего Redis сервера
-		Password: "",               // пароль, если установлен
-		DB:       0,                // номер базы данных
+		// Addr:     "localhost:6379", // адрес вашего Redis сервера
+		// Password: "",               // пароль, если установлен
+		// DB:       0,                // номер базы данных
 
-		// Addr:     "autorack.proxy.rlwy.net:52228",    // адрес вашего Redis сервера
-		// Password: "ndauicaHkkzYaCjcFlZZcaMzeHZetGWk", // пароль, если установлен
-		// DB:       0,
+		Addr:     "autorack.proxy.rlwy.net:52228",    // адрес вашего Redis сервера
+		Password: "ndauicaHkkzYaCjcFlZZcaMzeHZetGWk", // пароль, если установлен
+		DB:       0,
 	})
 	// Проверка подключения
 	log.Println("Connecting to Redis")
