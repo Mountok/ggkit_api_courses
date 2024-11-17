@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	// "os"
-
 	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"

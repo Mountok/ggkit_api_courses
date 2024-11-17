@@ -104,7 +104,7 @@ func CreateRoute(
 
 	// * Общее колчество пройденных тестов
 
-	router.HandleFunc("/api/test/{user_id}",testHandler.GetAllCompleted).Methods(
+	router.HandleFunc("/api/test/{user_id}/all",testHandler.GetAllCompleted).Methods(
 		http.MethodGet,
 	)
 

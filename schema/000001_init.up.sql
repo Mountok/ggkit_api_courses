@@ -144,7 +144,7 @@ INSERT INTO last_subjects(user_id,subjects_id) values ('b43a1721-2bc3-4421-8e70-
 
 INSERT INTO users (id, email, password, role, create_date)
 VALUES ('b43a1721-2bc3-4421-8e70-b7bd932ad802', 'themountok@gmail.com',
-        '$2a$10$yvIcyoUWkoBmT8PDMQ.L9.9zDCvel76DOexLupCD4m/CJB1jToEAy', 'user', '15.08.2024-22:18');
+        '$2a$10$yvIcyoUWkoBmT8PDMQ.L9.9zDCvel76DOexLupCD4m/CJB1jToEAy', 'admin', '15.08.2024-22:18');
 
 INSERT INTO profiles (user_id, description, phone, full_name, image, score)
 VALUES ('b43a1721-2bc3-4421-8e70-b7bd932ad802', 'Привет меня зовут Ислам.', '+79280229349', 'Ислам Дашуев',

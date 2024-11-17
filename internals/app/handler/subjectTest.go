@@ -35,7 +35,8 @@ func (handler *SubjectTestHandler) GetAllCompleted(w http.ResponseWriter, r *htt
 	}
 
 	m = map[string]interface{}  {
-		"result": numOfTest,
+		"result": "OK",
+		"data": numOfTest,
 	}
 
 	WrapOK(w,m)

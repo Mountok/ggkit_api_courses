@@ -20,8 +20,45 @@ func NewLessonsStorage(pool *pgxpool.Pool) *LessonsStorage {
 }
 
 func (db *LessonsStorage) CreateLesson(theme_id, theme_html string) error {
-	query := "INSERT INTO lessons (upkeep,theme_id) VALUES ($1,$2);"
-	_, err := db.databasePool.Exec(context.Background(), query, theme_html, theme_id)
+
+	tx, err := db.databasePool.Begin(context.Background())
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+			log.Printf("Transaction rolled back: %v", err)
+		} else {
+			err = tx.Commit(context.Background())
+			if err != nil {
+				log.Fatalf("Unable to commit transaction: %v", err)
+			}
+		}
+	}()
+
+	var isLessonCreate int = 0
+	row := tx.QueryRow(context.Background(),"SELECT count(id) FROM lessons WHERE theme_id=$1;",theme_id);
+	err = row.Scan(&isLessonCreate)
+	if err != nil {
+		return err
+	}
+	
+	if isLessonCreate == 0 {
+		_, err := tx.Exec(context.Background(), "INSERT INTO lessons (upkeep,theme_id) VALUES ($1,$2);", theme_html, theme_id)
+		if err != nil {
+			return err
+		}
+	} else {
+		_, err = tx.Exec(context.Background(),"UPDATE lessons SET upkeep=$1 WHERE theme_id=$2",theme_html,theme_id)
+		if err != nil {
+			return err
+		}
+	}
+
+
+	
 	return err
 
 }

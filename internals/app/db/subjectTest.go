@@ -317,8 +317,9 @@ func (db *SubjectTestStorage) CheckQuestion(answers []models.QuestionCheckReq, t
 func (db *SubjectTestStorage) GetAllCompleted(user_id string) (int, error) {
 	var (
 		query string = "SELECT count(id) from done_test WHERE user_id=$1;"
-		num   int    = 0
+		num   int    =  0
 	)
 	row := db.databasePool.QueryRow(context.Background(), query, user_id)
-	return num, row.Scan(&num)
+	err := row.Scan(&num)
+	return num, err
 }
