@@ -24,7 +24,7 @@ func NewLoginProcessor(storage *db.LoginStorage) *LoginProcessor {
 }
 const (
 	signingString = "39jgr0gtir9mc289g"
-	tokenTTL      = 1 * time.Minute
+	tokenTTL      = 6 * time.Hour
 	salt          = "&5a2@4D$5~54dC*&"
 )
 
