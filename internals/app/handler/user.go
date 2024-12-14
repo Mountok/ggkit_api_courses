@@ -25,7 +25,12 @@ func NewUserHandler(processor *processor.UserProcessor) *UserHandler {
 
 func (handler *UserHandler) LastSubject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	userIdString := vars["user_id"]
+	w, r, err := UserIdentify(w, r)
+	if err != nil {
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
+		return
+	}
+	userIdString := w.Header().Get(UserCtx)
 	switch r.Method {
 	case http.MethodGet:
 		logrus.Print(r.Method)
@@ -148,7 +153,14 @@ func (handler *UserHandler) ChangeDescription(w http.ResponseWriter, r *http.Req
 
 func (handler *UserHandler) GetPoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	user_id := vars["user_id"]
+
+	w,r,err := UserIdentify(w,r)
+	if err != nil {
+		WrapErrorWithStatus(w,err,http.StatusUnauthorized)
+		return
+	}
+
+	user_id := w.Header().Get(UserCtx)
 	theme_id := vars["theme_id"]
 
 	record, err := handler.processor.CheckDoneLessons(user_id, theme_id)

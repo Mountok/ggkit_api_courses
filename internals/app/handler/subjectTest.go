@@ -217,9 +217,14 @@ func (handler *SubjectTestHandler) CompletedTest(w http.ResponseWriter, r *http.
 }
 
 func (handler *SubjectTestHandler) CompletedTestBySubject(w http.ResponseWriter, r *http.Request) {
+	w,r, err := UserIdentify(w,r)
+	if err != nil {
+		WrapErrorWithStatus(w,err,http.StatusUnauthorized)
+		return
+	}
 	var (
 		vars      = mux.Vars(r)
-		userId    = vars["user_id"]
+		userId    = w.Header().Get(UserCtx)
 		subjectId = vars["subject_id"]
 		m         = make(map[string]interface{})
 	)
@@ -240,8 +245,12 @@ func (handler *SubjectTestHandler) CompletedTestBySubject(w http.ResponseWriter,
 func (handler *SubjectTestHandler) CheckQuestion(w http.ResponseWriter, r *http.Request) {
 	var resp []models.QuestionCheckReq
 	var vars = mux.Vars(r)
-	test_id, user_id, subject_id := vars["test_id"], vars["user_id"], vars["subject_id"]
-	err := json.NewDecoder(r.Body).Decode(&resp)
+	w,r, err := UserIdentify(w,r)
+	if err != nil {
+		WrapErrorWithStatus(w,err,http.StatusUnauthorized)
+	}
+	test_id, user_id, subject_id := vars["test_id"], w.Header().Get(UserCtx), vars["subject_id"]
+	err = json.NewDecoder(r.Body).Decode(&resp)
 	if err != nil {
 		WrapError(w, err)
 	}

@@ -1,20 +1,24 @@
 package models
 
 type User struct {
-	Id         string `json:"id"`
-	Email      string `json:"email"`
-	Password   string `json:"password"`
-	Role       string `json:"role"`
-	CreateDate string `json:"create_date"`
+	Id         string `json:"id" db:"id"`
+	Email      string `json:"email" db:"email"`
+	Password   string `json:"password" db:"password"`
+	Role       string `json:"role" db:"role"`
+	CreateDate string `json:"create_date" db:"create_date"`
 }
 
 type UserCreate struct {
 	Id         string `json:"id"`
-	Username         string `json:"username"`
-	Email      string `json:"email"`
-	Password   string `json:"password"`
+	Username   string `json:"username" binding:"required"`
+	Email      string `json:"email" binding:"required"`
+	Password   string `json:"password" binding:"required"`
 	Role       string `json:"role"`
 	CreateDate string `json:"create_date"`
+}
+type UserSignIn struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type ValidateUser struct {

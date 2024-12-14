@@ -24,6 +24,11 @@ func NewSubjectHandler(processor *processor.SubjectProcessor) *SubjectHandler {
 
 func (handler *SubjectHandler) List(w http.ResponseWriter, r *http.Request) {
 
+	w, r, err := UserIdentify(w, r)
+	if err != nil {
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
+		return
+	}
 	list, err := handler.processor.SubjectsList()
 	if err != nil {
 		WrapError(w, err)
@@ -38,6 +43,11 @@ func (handler *SubjectHandler) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler *SubjectHandler) One(w http.ResponseWriter, r *http.Request) {
+	w, r, err := UserIdentify(w, r)
+	if err != nil {
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
+		return
+	}
 	vars := mux.Vars(r)
 	data, err := handler.processor.SubjectById(vars["id"])
 	if err != nil {
@@ -53,11 +63,15 @@ func (handler *SubjectHandler) One(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler *SubjectHandler) UploadSubject(w http.ResponseWriter, r *http.Request) {
+	w, r, err := UserIdentify(w, r)
+	if err != nil {
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
+		return
+	}
 	// Получаем поля title и description из тела запроса
 	title := r.FormValue("title")
 	description := r.FormValue("description")
 	is_certificated := r.FormValue("iscertificated")
-	
 
 	// Получаем файл из поля image
 	file, header, err := r.FormFile("image")
@@ -73,14 +87,14 @@ func (handler *SubjectHandler) UploadSubject(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	image_url :=  "praxis_course_of_id_"
+	image_url := "praxis_course_of_id_"
 
 	newSubjectId, err := handler.processor.UploadSubject(title, description, image_url, is_certificated)
 	if err != nil {
 		WrapError(w, err)
 	}
 	// Создаем файл в публичной папке /images
-	image_url =  fmt.Sprintf("praxis_course_of_id_%d.webp",newSubjectId)
+	image_url = fmt.Sprintf("praxis_course_of_id_%d.webp", newSubjectId)
 	out, err := os.Create("./images/" + image_url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -106,6 +120,11 @@ func (handler *SubjectHandler) UploadSubject(w http.ResponseWriter, r *http.Requ
 }
 
 func (handler *SubjectHandler) UpdateSubject(w http.ResponseWriter, r *http.Request) {
+	w, r, err := UserIdentify(w, r)
+	if err != nil {
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
+		return
+	}
 	// Получаем поля title и description из тела запроса
 	subject_id := r.FormValue("subject_id")
 	title := r.FormValue("title")
@@ -122,7 +141,7 @@ func (handler *SubjectHandler) UpdateSubject(w http.ResponseWriter, r *http.Requ
 		logrus.Error(err)
 		// WrapError(w, err)
 		// return
-		newSubjectId, err = handler.processor.UpdateSubject(subject_id, title, description, image_url,is_certificated)
+		newSubjectId, err = handler.processor.UpdateSubject(subject_id, title, description, image_url, is_certificated)
 		if err != nil {
 			WrapError(w, err)
 			return
@@ -137,7 +156,7 @@ func (handler *SubjectHandler) UpdateSubject(w http.ResponseWriter, r *http.Requ
 		image_url = "praxis_course_of_id_" + subject_id + ".webp"
 		defer file.Close()
 
-		newSubjectId, err = handler.processor.UpdateSubject(subject_id, title, description, image_url,is_certificated)
+		newSubjectId, err = handler.processor.UpdateSubject(subject_id, title, description, image_url, is_certificated)
 		if err != nil {
 			WrapError(w, err)
 		}
@@ -169,10 +188,14 @@ func (handler *SubjectHandler) UpdateSubject(w http.ResponseWriter, r *http.Requ
 }
 
 func (handler *SubjectHandler) DeleteSubject(w http.ResponseWriter, r *http.Request) {
-
+	w, r, err := UserIdentify(w, r)
+	if err != nil {
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
+		return
+	}
 	vars := mux.Vars(r)
 
-	err := handler.processor.DeleteSubject(vars["id"])
+	err = handler.processor.DeleteSubject(vars["id"])
 	if err != nil {
 		WrapError(w, err)
 		return
@@ -204,24 +227,28 @@ func (handler *SubjectHandler) Video(w http.ResponseWriter, r *http.Request) {
 	WrapError(w, errors.New("Имя видео не указано"))
 }
 func (handler *SubjectHandler) Certificate(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	subjectId := vars["subject_id"]
-	userId := vars["user_id"]
-	var m = map[string]interface{}{}
-	switch r.Method {
-	case http.MethodGet: 
-	err := handler.processor.Certificate(subjectId,userId)
+	w, r, err := UserIdentify(w, r)
 	if err != nil {
-		WrapError(w,err)
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
 		return
 	}
-	m = map[string]interface{}{
-		"result": "OK",
-		"courseDone": true,
-	}
+	vars := mux.Vars(r)
+	subjectId := vars["subject_id"]
+	userId := vars["user_id"] // изменить
+	var m = map[string]interface{}{}
+	switch r.Method {
+	case http.MethodGet:
+		err := handler.processor.Certificate(subjectId, userId)
+		if err != nil {
+			WrapError(w, err)
+			return
+		}
+		m = map[string]interface{}{
+			"result":     "OK",
+			"courseDone": true,
+		}
 	}
 
-	WrapOK(w,m)
-	
+	WrapOK(w, m)
 
 }

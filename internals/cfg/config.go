@@ -60,7 +60,7 @@ func (cfg *Cfg) GetDBConnetcUrl() string { //маленький метод дл�
 
 func (cfg *Cfg) NewRedisClient() *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
-		// Addr:     "localhost:6379", // адрес вашего Redis сервера
+		// Addr:     "127.0.0.1:6379", // адрес вашего Redis сервера
 		// Password: "",               // пароль, если установлен
 		// DB:       0,                // номер базы данных
 

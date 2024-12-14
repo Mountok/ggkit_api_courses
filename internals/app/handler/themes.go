@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"ggkit_learn_service/internals/app/processor"
 	"net/http"
+
 	// "strconv"
 
 	"github.com/gorilla/mux"
@@ -21,7 +22,12 @@ func NewThemesHandler(processor *processor.ThemesProcessor) *ThemesHandler {
 
 func (handler *ThemesHandler) GetAllCompletedBySubject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	user_id := vars["user_id"]
+	w, r, err := UserIdentify(w, r)
+	if err != nil {
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
+		return
+	}
+	user_id := w.Header().Get(UserCtx)
 	subject_id := vars["subject_id"]
 
 	if user_id == "" || subject_id == "" {
@@ -42,11 +48,15 @@ func (handler *ThemesHandler) GetAllCompletedBySubject(w http.ResponseWriter, r 
 	WrapOK(w, m)
 }
 
-func (handler *ThemesHandler) GetAllCompleted (w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	user_id := vars["user_id"]
+func (handler *ThemesHandler) GetAllCompleted(w http.ResponseWriter, r *http.Request) {
+	w, r, err := UserIdentify(w, r)
+	if err != nil {
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
+		return
+	}
+	user_id := w.Header().Get(UserCtx)
 
-	if user_id == ""{
+	if user_id == "" {
 		WrapError(w, fmt.Errorf("not valid user_id"))
 		return
 	}
@@ -63,7 +73,6 @@ func (handler *ThemesHandler) GetAllCompleted (w http.ResponseWriter, r *http.Re
 	}
 	WrapOK(w, m)
 }
-
 
 func (handler *ThemesHandler) CreateTheme(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
@@ -91,19 +100,19 @@ func (handler *ThemesHandler) UpdateTheme(w http.ResponseWriter, r *http.Request
 	themeIdStrin := vars["theme_id"]
 	themeTitle := r.FormValue("theme_title")
 	themeDescription := r.FormValue("theme_description")
-	id, err := handler.processor.UpdateTheme(themeIdStrin,themeTitle,themeDescription)
+	id, err := handler.processor.UpdateTheme(themeIdStrin, themeTitle, themeDescription)
 	if err != nil {
-		WrapError(w,err)
-		return 
+		WrapError(w, err)
+		return
 	}
 
-	var m = map[string ]interface{}{
+	var m = map[string]interface{}{
 		"result": "OK",
-		"data": id,
+		"data":   id,
 	}
 
-	WrapOK(w,m)
-	
+	WrapOK(w, m)
+
 }
 
 func (handler *ThemesHandler) DeleteTheme(w http.ResponseWriter, r *http.Request) {
@@ -124,7 +133,13 @@ func (handler *ThemesHandler) DeleteTheme(w http.ResponseWriter, r *http.Request
 
 func (handler *ThemesHandler) Themes(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	w, r, err := UserIdentify(w, r)
+	if err != nil {
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
+		return
+	}
 	data, err := handler.processor.ThemesBySubjectId(vars)
+
 	if err != nil {
 		WrapError(w, err)
 	}

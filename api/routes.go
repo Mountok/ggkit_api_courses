@@ -3,7 +3,6 @@ package api
 import (
 	"ggkit_learn_service/internals/app/handler"
 	"net/http"
-
 	"github.com/gorilla/mux"
 )
 
@@ -33,11 +32,11 @@ func CreateRoute(
 	router.HandleFunc("/api/themes/{theme_id}", themeHandler.DeleteTheme).Methods(http.MethodDelete)
 
 	// ! Поиск пройденных тем для пользователя по предмету
-	router.HandleFunc("/api/themes/complete/{user_id}/{subject_id}",
+	router.HandleFunc("/api/themes/complete/{subject_id}",
 		themeHandler.GetAllCompletedBySubject).Methods(http.MethodGet)
 	
 	// ! Поиск пройденных тем для пользователя общее количество
-	router.HandleFunc("/api/themes/complete/{user_id}",
+	router.HandleFunc("/api/themes/completed",
 		themeHandler.GetAllCompleted).Methods(http.MethodGet)
 
 	////////////////////////////////////////////////////////
@@ -48,30 +47,35 @@ func CreateRoute(
 
 	////////////////////////////////////////////////////////
 	// ! Авторизация / регистрация
-	router.HandleFunc("/api/reg", loginHandler.Create).Methods(http.MethodPost)
-	router.HandleFunc("/api/auth", loginHandler.Auth).Methods(http.MethodPost)
-	router.HandleFunc("/api/validate", loginHandler.Validate).Methods(http.MethodPost)
+	
+	router.HandleFunc("/api/sign-up", loginHandler.SignUp).Methods(http.MethodPost)
+	router.HandleFunc("/api/sign-in", loginHandler.SignIn).Methods(http.MethodPost)
+	router.HandleFunc("/api/authorization",loginHandler.Authorization).Methods(http.MethodPost)
+	// СТАРОЕ !!!!!
+	// router.HandleFunc("/api/reg", loginHandler.Create).Methods(http.MethodPost)
+	// router.HandleFunc("/api/auth", loginHandler.Auth).Methods(http.MethodPost)
+	// router.HandleFunc("/api/validate", loginHandler.Validate).Methods(http.MethodPost)
 
 	////////////////////////////////////////////////////////
 	// ! Эндпоинты для профиля
 
 	// * Получение данных (профиля) пользователя
-	router.HandleFunc("/api/profile/{user_id}", loginHandler.Profile).Methods(http.MethodGet)
+	router.HandleFunc("/api/profile", loginHandler.Profile).Methods(http.MethodGet)
 	// * Смена автарки
 	router.HandleFunc("/api/profile/avatar", userHandler.UploadAvatar).Methods(http.MethodPost)
 	// * Изменение описания
 	router.HandleFunc("/api/profile/description", userHandler.ChangeDescription).Methods(http.MethodPost)
 	// * Добавление поинтов (100 поинтов == 1 лвл)
-	router.HandleFunc("/api/profile/point/{user_id}/{theme_id}", userHandler.GetPoint).Methods(http.MethodPost)
+	router.HandleFunc("/api/profile/point/{theme_id}", userHandler.GetPoint).Methods(http.MethodPost)
 	// * Смена имени
 	router.HandleFunc("/api/profile/name/{user_id}/{new_name}", userHandler.ChangeName).Methods(http.MethodPost)
 	// * Получение рейтинга пользователя
 	router.HandleFunc("/api/profiles", userHandler.Rating).Methods(http.MethodGet)
 
 	// *  пройденной темы для пользователя по id
-	router.HandleFunc("/api/profile/subject/{user_id}", userHandler.LastSubject).Methods(http.MethodGet)
+	router.HandleFunc("/api/profile/subject", userHandler.LastSubject).Methods(http.MethodGet)
 	// *  установка последний темы
-	router.HandleFunc("/api/profile/subject/{user_id}/{course_id}", userHandler.LastSubject).Methods(http.MethodPost)
+	router.HandleFunc("/api/profile/subject/{course_id}", userHandler.LastSubject).Methods(http.MethodPost)
 
 	////////////////////////////////////////////////////////
 	// ! Эндпоинты для тестов
@@ -89,10 +93,10 @@ func CreateRoute(
 		http.MethodPut,
 	)
 
-	router.HandleFunc("/api/test/check/{test_id}/{subject_id}/{user_id}", testHandler.CheckQuestion).Methods(
+	router.HandleFunc("/api/test/check/{test_id}/{subject_id}", testHandler.CheckQuestion).Methods(
 		http.MethodPost,
 	)
-	router.HandleFunc("/api/test/result/{user_id}/{subject_id}", testHandler.CompletedTestBySubject).Methods(
+	router.HandleFunc("/api/test/for/{subject_id}", testHandler.CompletedTestBySubject).Methods(
 		http.MethodGet,
 	)
 
@@ -123,5 +127,7 @@ func CreateRoute(
 
 	router.HandleFunc("/videos", subjectHandler.Video).Methods(http.MethodGet)
 
+
 	return router
 }
+

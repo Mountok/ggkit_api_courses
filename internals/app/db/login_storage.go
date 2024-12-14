@@ -3,12 +3,14 @@ package db
 import (
 	"context"
 	"errors"
+	"fmt"
 	"ggkit_learn_service/internals/app/models"
 
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/gofrs/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type LoginStorage struct {
@@ -19,6 +21,24 @@ func NewLoginStorage(databasePool *pgxpool.Pool) *LoginStorage {
 	storage := new(LoginStorage)
 	storage.databasePool = databasePool
 	return storage
+}
+
+func (db *LoginStorage) GetUser(email, password string) (models.User, error) {
+	var result []models.User
+	fmt.Println(email, password)
+	query := "SELECT id, email, password, role, create_date FROM users WHERE email=$1"
+	err := pgxscan.Select(context.Background(), db.databasePool, &result, query, email)
+	if err != nil || len(result) == 0 {
+		return models.User{}, err
+	}
+	fmt.Println(result)
+	err = bcrypt.CompareHashAndPassword([]byte(result[0].Password), []byte(password))
+	if err != nil {
+		log.Println("Пароль неверный")
+		return models.User{}, errors.New("пароль не верный")
+	}
+	log.Println("Пароль верный")
+	return result[0], err
 }
 
 func (db *LoginStorage) CreateUser(user models.UserCreate) (string, error) {
@@ -77,12 +97,10 @@ func (db *LoginStorage) CreateProfileForUser(user models.UserCreate) (string, er
 	log.Infof("Профиль создан")
 
 	query = "INSERT INTO last_subjects(user_id,subjects_id) VALUES($1,$2)"
-	_, err = db.databasePool.Exec(context.Background(),query,currentUser[0].Id,1)
-	if err != nil{
+	_, err = db.databasePool.Exec(context.Background(), query, currentUser[0].Id, 1)
+	if err != nil {
 		return currentUser[0].Id, err
 	}
-
-
 
 	return currentUser[0].Id, nil
 }
@@ -118,3 +136,5 @@ func (db *LoginStorage) Validate(uuid string) (validateUser []models.ValidateUse
 // 	full_name varchar(125) not null,
 // 	image text not null,
 // 	score integer not null default 0,
+
+
