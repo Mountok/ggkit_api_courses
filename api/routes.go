@@ -36,7 +36,7 @@ func CreateRoute(
 		themeHandler.GetAllCompletedBySubject).Methods(http.MethodGet)
 	
 	// ! Поиск пройденных тем для пользователя общее количество
-	router.HandleFunc("/api/themes/completed",
+	router.HandleFunc("/api/themes/completed/{user_id}",
 		themeHandler.GetAllCompleted).Methods(http.MethodGet)
 
 	////////////////////////////////////////////////////////

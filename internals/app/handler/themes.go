@@ -49,17 +49,10 @@ func (handler *ThemesHandler) GetAllCompletedBySubject(w http.ResponseWriter, r 
 }
 
 func (handler *ThemesHandler) GetAllCompleted(w http.ResponseWriter, r *http.Request) {
-	w, r, err := UserIdentify(w, r)
-	if err != nil {
-		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
-		return
-	}
-	user_id := w.Header().Get(UserCtx)
 
-	if user_id == "" {
-		WrapError(w, fmt.Errorf("not valid user_id"))
-		return
-	}
+	vars := mux.Vars(r)
+	user_id := vars["user_id"]
+
 
 	listsOfCompletedThemes, err := handler.processor.GetAllCompeted(user_id)
 

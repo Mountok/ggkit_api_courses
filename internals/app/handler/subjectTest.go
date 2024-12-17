@@ -22,6 +22,7 @@ func NewSubjectTestHandler(processor *processor.SubjectTestProcessor) *SubjectTe
 
 
 func (handler *SubjectTestHandler) GetAllCompleted(w http.ResponseWriter, r *http.Request) {
+	
 	var (
 		vars = mux.Vars(r)
 		m = map[string]interface{}{}
