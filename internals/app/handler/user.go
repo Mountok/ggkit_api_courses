@@ -31,6 +31,11 @@ func (handler *UserHandler) LastSubject(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	userIdString := w.Header().Get(UserCtx)
+	fmt.Println()
+	fmt.Println()
+	fmt.Println(userIdString)
+	fmt.Println()
+	fmt.Println()
 	switch r.Method {
 	case http.MethodGet:
 		logrus.Print(r.Method)
@@ -47,7 +52,11 @@ func (handler *UserHandler) LastSubject(w http.ResponseWriter, r *http.Request) 
 
 	case http.MethodPost:
 		courseId := vars["course_id"]
-
+		fmt.Println()
+		fmt.Println()
+		fmt.Println(courseId)
+		fmt.Println()
+		fmt.Println()
 		err := handler.processor.SetLastSubject(userIdString, courseId)
 		if err != nil {
 			WrapError(w, err)
@@ -63,12 +72,17 @@ func (handler *UserHandler) LastSubject(w http.ResponseWriter, r *http.Request) 
 
 func (handler *UserHandler) ChangeName(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	w, r, err := UserIdentify(w, r)
+	if err != nil {
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
+		return
+	}
 	var (
-		userIdString = vars["user_id"]
+		userIdString = w.Header().Get(UserCtx)
 		newName      = vars["new_name"]
 	)
 
-	newName, err := handler.processor.ChangeUserName(userIdString, newName)
+	newName, err = handler.processor.ChangeUserName(userIdString, newName)
 	if err != nil {
 		WrapError(w, err)
 		return
@@ -83,8 +97,12 @@ func (handler *UserHandler) ChangeName(w http.ResponseWriter, r *http.Request) {
 
 func (handler *UserHandler) UploadAvatar(w http.ResponseWriter, r *http.Request) {
 	// Получаем поля title и description из тела запроса
-	userId := r.FormValue("user_id")
-
+	w, r, err := UserIdentify(w, r)
+	if err != nil {
+		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
+		return
+	}
+	userId := w.Header().Get(UserCtx)
 	// Получаем файл из поля image
 	file, header, err := r.FormFile("image")
 	if err != nil {
@@ -133,10 +151,16 @@ func (handler *UserHandler) UploadAvatar(w http.ResponseWriter, r *http.Request)
 }
 
 func (handler *UserHandler) ChangeDescription(w http.ResponseWriter, r *http.Request) {
-	userId := r.FormValue("user_id")
+	w,r,err := UserIdentify(w,r)
+	if err != nil {
+		WrapErrorWithStatus(w,err,http.StatusUnauthorized)
+		return
+	}
+
+	user_id := w.Header().Get(UserCtx)
 	newDescription := r.FormValue("description")
 
-	err := handler.processor.ChangeDescription(userId, newDescription)
+	err = handler.processor.ChangeDescription(user_id, newDescription)
 	if err != nil {
 		WrapError(w, err)
 		return
@@ -144,7 +168,7 @@ func (handler *UserHandler) ChangeDescription(w http.ResponseWriter, r *http.Req
 
 	var m = map[string]interface{}{
 		"result":  "Описание провеля успешно заменено",
-		"user_id": userId,
+		"user_id": user_id,
 	}
 
 	WrapOK(w, m)
@@ -201,4 +225,22 @@ func (handler *UserHandler) Rating(w http.ResponseWriter, r *http.Request) {
 		"data":   lists,
 	}
 	WrapOK(w, m)
+}
+
+
+func (handler *UserHandler) GetUserOnSubject(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	subjectId := vars["course_id"]
+
+	findUser, err := handler.processor.GetUserOnSubject(subjectId)
+	if err != nil {
+		WrapError(w,err)
+		return
+	}
+	var m = map[string]interface{}{
+		"result": "OK",
+		"data": findUser,
+	}
+	WrapOK(w,m)
+
 }

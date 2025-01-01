@@ -38,3 +38,8 @@ type LastSubject struct {
 	UserId     string `json:"user_id" db:"user_id"`
 	SubjectsId int    `json:"subjects_id" db:"subjects_id"`
 }
+
+type FindUser struct {
+	Id string `json:"id" db:"user_id"`
+	Image string `json:"image" db:"image"`
+}

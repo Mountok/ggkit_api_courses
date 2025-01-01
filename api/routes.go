@@ -68,16 +68,21 @@ func CreateRoute(
 	// * Добавление поинтов (100 поинтов == 1 лвл)
 	router.HandleFunc("/api/profile/point/{theme_id}", userHandler.GetPoint).Methods(http.MethodPost)
 	// * Смена имени
-	router.HandleFunc("/api/profile/name/{user_id}/{new_name}", userHandler.ChangeName).Methods(http.MethodPost)
+	router.HandleFunc("/api/profile/name/{new_name}", userHandler.ChangeName).Methods(http.MethodPost)
 	// * Получение рейтинга пользователя
 	router.HandleFunc("/api/profiles", userHandler.Rating).Methods(http.MethodGet)
 
-	// *  пройденной темы для пользователя по id
+	// *  пройденного предмета для пользователя по id
 	router.HandleFunc("/api/profile/subject", userHandler.LastSubject).Methods(http.MethodGet)
-	// *  установка последний темы
+	// *  установка последнего предмета
 	router.HandleFunc("/api/profile/subject/{course_id}", userHandler.LastSubject).Methods(http.MethodPost)
-
+	
+	// !!! Получение пользователей которую находяться на определенном предмете по id предмета
+	router.HandleFunc("/api/profiles/on/subject/{course_id}",userHandler.GetUserOnSubject).Methods(http.MethodGet)
+	
+	
 	////////////////////////////////////////////////////////
+	
 	// ! Эндпоинты для тестов
 	router.HandleFunc("/api/test/{subject_id}", testHandler.TestsForSubject).Methods(
 		http.MethodGet,
@@ -113,7 +118,7 @@ func CreateRoute(
 	)
 
 	// ! ПОЛУЧЕНИЕ СЕРТИФИКАТА
-	router.HandleFunc("/api/certificate/{user_id}/{subject_id}", subjectHandler.Certificate).Methods(
+	router.HandleFunc("/api/certificate/{subject_id}", subjectHandler.Certificate).Methods(
 		http.MethodGet,
 		http.MethodPost,
 		http.MethodDelete,

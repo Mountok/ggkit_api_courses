@@ -49,3 +49,10 @@ func (processor *UserProcessor) Rating() ([]models.RatingUser, error) {
 func (processor *UserProcessor) CheckDoneLessons(user_id, theme_id string) (int, error) {
 	return processor.storage.CheckDoneLessons(user_id, theme_id)
 }
+
+func (processor *UserProcessor) GetUserOnSubject(subjectId string) ([]models.FindUser, error) {
+	if subjectId == "" || subjectId == "0" {
+		return []models.FindUser{}, errors.New("undefined value for subject_id")
+	}
+	return processor.storage.GetUserOnSubject(subjectId)
+}

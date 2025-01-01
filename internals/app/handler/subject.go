@@ -234,7 +234,7 @@ func (handler *SubjectHandler) Certificate(w http.ResponseWriter, r *http.Reques
 	}
 	vars := mux.Vars(r)
 	subjectId := vars["subject_id"]
-	userId := vars["user_id"] // изменить
+	userId := w.Header().Get(UserCtx)
 	var m = map[string]interface{}{}
 	switch r.Method {
 	case http.MethodGet:
