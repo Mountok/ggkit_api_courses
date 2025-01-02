@@ -238,7 +238,7 @@ func (handler *SubjectHandler) Certificate(w http.ResponseWriter, r *http.Reques
 	var m = map[string]interface{}{}
 	switch r.Method {
 	case http.MethodGet:
-		err := handler.processor.Certificate(subjectId, userId)
+		date, err := handler.processor.Certificate(subjectId, userId)
 		if err != nil {
 			WrapError(w, err)
 			return
@@ -246,6 +246,7 @@ func (handler *SubjectHandler) Certificate(w http.ResponseWriter, r *http.Reques
 		m = map[string]interface{}{
 			"result":     "OK",
 			"courseDone": true,
+			"date": date,
 		}
 	}
 

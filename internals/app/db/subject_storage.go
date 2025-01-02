@@ -7,6 +7,7 @@ import (
 	"ggkit_learn_service/internals/app/models"
 	"ggkit_learn_service/internals/utils"
 
+
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
@@ -35,7 +36,7 @@ func (db *SubjectStorage) GetAllSubjects() ([]models.Subject, error) {
 func (db *SubjectStorage) UploadStorage(title, description, image_url, is_certificated string) (int, error) {
 	query := "INSERT INTO subjects (title,description,image,iscertificated) VALUES ($1,$2,$3,$4) RETURNING id;"
 	var id int
-	err := db.databasePool.QueryRow(context.Background(), query, title, description, image_url,is_certificated).Scan(&id)
+	err := db.databasePool.QueryRow(context.Background(), query, title, description, image_url, is_certificated).Scan(&id)
 	if err != nil {
 		return id, err
 	}
@@ -46,7 +47,7 @@ func (db *SubjectStorage) UploadStorage(title, description, image_url, is_certif
 	}
 	return id, err
 }
-func (db *SubjectStorage) UpdateSubject(subject_id,title, description,image_url, is_certificated string) (int, error) {
+func (db *SubjectStorage) UpdateSubject(subject_id, title, description, image_url, is_certificated string) (int, error) {
 	var updatedQuestionId int
 	var argumentString string
 	if title != "" {
@@ -93,28 +94,29 @@ func (db *SubjectStorage) DeleteSubject(id string) error {
 	return err
 }
 
-func (db *SubjectStorage) Certificate(subjectId, userId string) error {
+func (db *SubjectStorage) Certificate(subjectId, userId string) (interface{}, error) {
+
 	allComletedThemes, err := utils.GetAllCompletedThemes(db.databasePool, userId, subjectId)
 	if err != nil {
-		return err
+		return "", err
 	}
 	allThemes, err := utils.GetAllThemes(db.databasePool, subjectId)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if len(allComletedThemes) != len(allThemes) {
-		return errors.New("все темы не пройденый")
+		return "", errors.New("все темы не пройденый")
 	} else {
 		fmt.Println(allComletedThemes)
 		fmt.Println(allThemes)
 		allComletedTests, err := utils.GetAllCompletedTest(db.databasePool, userId, subjectId)
 		if err != nil {
-			return err
+			return "", err
 		}
 		allTestIds, err := utils.GetAllTestBySubject(db.databasePool, subjectId)
 		if err != nil {
-			return err
+			return "", err
 		}
 		fmt.Println(allComletedTests)
 		if len(allComletedTests) == len(allTestIds) {
@@ -126,12 +128,43 @@ func (db *SubjectStorage) Certificate(subjectId, userId string) error {
 
 				} else {
 					fmt.Printf("Тест не выполнен (id теста: %d)\n", allComletedTests[i].TestId)
-					return errors.New("тесты выполнены неверно")
+					return "", errors.New("тесты выполнены неверно")
 				}
 			}
-			return nil
+			var checkCertfRes []string
+			checkCertfQuery := "SELECT user_id FROM certificates WHERE user_id=$1"
+			err := pgxscan.Select(context.Background(), db.databasePool, &checkCertfRes, checkCertfQuery, userId)
+			if err != nil {
+				return "", errors.New(
+					fmt.Sprintf("ошибка на стороне сервера (SELECT user_id FROM certificates WHERE user_id=$1): \n%s\n", err.Error()),
+				)
+			}
+			if len(checkCertfRes) == 0 {
+				query := "INSERT INTO certificates (user_id,subject_id) VALUES ($1,$2);"
+				_, err = db.databasePool.Exec(context.Background(), query, userId, subjectId)
+				if err != nil {
+					return "", errors.New(
+						fmt.Sprintf("ошибка на стороне сервера INSERT INTO certificates (user_id,subject_id) VALUES ($1,$2);: \n%s\n", err.Error()),
+					)
+				}
+				var certfRes []interface{}
+				certfQuery := "SELECT get_date FROM certificates WHERE user_id=$1"
+				err = pgxscan.Select(context.Background(), db.databasePool, &certfRes, certfQuery, userId)
+				if len(certfRes)==0{
+					return "", err
+				}
+				return certfRes[0], err
+
+			}
+			var certfRes []interface{}
+			certfQuery := "SELECT get_date FROM certificates WHERE user_id=$1"
+			err = pgxscan.Select(context.Background(), db.databasePool, &certfRes, certfQuery, userId)
+			if len(certfRes)==0{
+				return "", err
+			}
+			return certfRes[0], err
 		} else {
-			return errors.New("не все тесты пройдены")
+			return "", errors.New("не все тесты пройдены")
 		}
 	}
 

@@ -47,6 +47,6 @@ func (process *SubjectProcessor) DeleteSubject(id string) error {
 }
 
 
-func (process *SubjectProcessor) Certificate(subjectId, userId string) error  {
+func (process *SubjectProcessor) Certificate(subjectId, userId string) (interface{},error)  {
 	return process.cache.Certificate(subjectId,userId)
 }
