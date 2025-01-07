@@ -26,6 +26,21 @@ func (process *LessonsProcessor) CreateLesson(theme_id, theme_html string) error
 	}
 	return process.storage.CreateLesson(theme_id,theme_html)
 }
+func (process *LessonsProcessor) UpdateLesson(theme_id, theme_html string) error {
+	if theme_id == "" || theme_id == " " {
+		return errors.New("неверный theme_id")
+	}
+	if theme_html == " " || theme_html == "" {
+		return errors.New("неверный theme_html")
+	}
+	return process.storage.UpdateLesson(theme_id,theme_html)
+}
+func (process *LessonsProcessor) GetLessonHTML(theme_id string) (string, error) {
+	if theme_id == "" || theme_id == " " {
+		return "", errors.New("неверный theme_id")
+	}
+	return process.storage.GetLessonHTML(theme_id)
+}
 
 func (process *LessonsProcessor) GetLessonByIdSubjectAndTheme(subjectId, themeId int) (models.Lesson, error) {
 	if subjectId <= 0 {

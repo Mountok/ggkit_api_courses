@@ -19,22 +19,49 @@ func NewLessonsHanler(processor *processor.LessonsProcessor) *LessonsHandler {
 	return handler
 }
 
-func (handler *LessonsHandler) CreateLesson(w http.ResponseWriter, r *http.Request) {
+func (handler *LessonsHandler) GRUDLesson(w http.ResponseWriter, r *http.Request) {
+	
 	var (
 		theme_id   = r.FormValue("theme_id")
 		theme_html = r.FormValue("theme_html")
+		m map[string]interface{}
 	)
 
-	err := handler.processor.CreateLesson(theme_id, theme_html)
-	if err != nil {
-		WrapError(w, err)
-		return
-	}
-	var m = map[string]interface{}{
-		"result": "ok",
+	switch r.Method {
+	case http.MethodPost:
+		err := handler.processor.CreateLesson(theme_id, theme_html)
+		if err != nil {
+			WrapError(w, err)
+			return
+		}
+		m = map[string]interface{}{
+			"result": "ok",
+		}
+	case http.MethodPut:
+		err := handler.processor.UpdateLesson(theme_id, theme_html)
+		if err != nil {
+			WrapError(w, err)
+			return
+		}
+		m = map[string]interface{}{
+			"result": "ok",
+		}
+	case http.MethodGet:
+		theme_id := r.URL.Query().Get("theme_id")
+		theme_html, err := handler.processor.GetLessonHTML(theme_id)
+		if err != nil {
+			WrapError(w, err)
+			return
+		}
+		m = map[string]interface{}{
+			"result": "ok",
+			"data": theme_html,
+		}
 	}
 	WrapOK(w, m)
 
+
+	
 }
 
 func (handler *LessonsHandler) Lesson(w http.ResponseWriter, r *http.Request) {

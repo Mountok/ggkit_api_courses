@@ -43,7 +43,12 @@ func CreateRoute(
 	// ! Эндпоинты для уроков
 
 	router.HandleFunc("/api/lessons/{subject_id}/{theme_id}", lessonsHandler.Lesson).Methods(http.MethodGet)
-	router.HandleFunc("/api/lessons", lessonsHandler.CreateLesson).Methods(http.MethodPost)
+
+	router.HandleFunc("/api/lessons", lessonsHandler.GRUDLesson).Methods(
+		http.MethodPost,
+		http.MethodGet,
+		http.MethodPut,
+	)
 
 	////////////////////////////////////////////////////////
 	// ! Авторизация / регистрация
