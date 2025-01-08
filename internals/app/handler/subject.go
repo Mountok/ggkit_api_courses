@@ -193,17 +193,31 @@ func (handler *SubjectHandler) DeleteSubject(w http.ResponseWriter, r *http.Requ
 		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
 		return
 	}
-	vars := mux.Vars(r)
-
-	err = handler.processor.DeleteSubject(vars["id"])
-	if err != nil {
-		WrapError(w, err)
-		return
+	subjectID := r.URL.Query().Get("id")
+	switch r.Method{
+	case http.MethodDelete:
+		err = handler.processor.DeleteSubject(subjectID)
+		if err != nil {
+			WrapError(w, err)
+			return
+		}
+		var m = map[string]interface{}{
+			"result": "OK",
+		}
+		WrapOK(w, m)
+	case http.MethodGet:
+		ids, err := handler.processor.GetDeletedSubject()
+		if err != nil {
+			WrapError(w, err)
+			return
+		}
+		var m = map[string]interface{}{
+			"result": "OK",
+			"data": ids,
+		}
+		WrapOK(w, m)
 	}
-	var m = map[string]interface{}{
-		"result": "OK",
-	}
-	WrapOK(w, m)
+	
 
 }
 

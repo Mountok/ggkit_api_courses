@@ -22,7 +22,7 @@ func CreateRoute(
 	router.HandleFunc("/api/subject/{id}", subjectHandler.One).Methods(http.MethodGet)
 	router.HandleFunc("/api/subject", subjectHandler.UploadSubject).Methods(http.MethodPost)
 	router.HandleFunc("/api/subject", subjectHandler.UpdateSubject).Methods(http.MethodPut)
-	router.HandleFunc("/api/subject/{id}", subjectHandler.DeleteSubject).Methods(http.MethodDelete)
+	router.HandleFunc("/api/delete/subject", subjectHandler.DeleteSubject).Methods(http.MethodDelete,http.MethodGet)
 	////////////////////////////////////////////////////////
 	// ! Эндпоинты для тем
 

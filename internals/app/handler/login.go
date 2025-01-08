@@ -172,7 +172,6 @@ const (
 
 func UserIdentify(w http.ResponseWriter, r *http.Request) (rw http.ResponseWriter, rs *http.Request, err error) {
 		header := r.Header.Get(authorizationHeader)
-		fmt.Println(header)
 		if header == "" {
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.Header().Set("X-Content-Type-Options", "nosniff") //даем понять что ответ приходит в формате json
@@ -190,9 +189,11 @@ func UserIdentify(w http.ResponseWriter, r *http.Request) (rw http.ResponseWrite
 
 		userId,userRole, err := processor.ParseToken(string(headerParts[1]))
 		if err != nil {
+
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.Header().Set("X-Content-Type-Options", "nosniff") //даем понять что ответ приходит в формате json
 			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Println(err)
 			return w,r,errors.New("invalid token")
 		}
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")

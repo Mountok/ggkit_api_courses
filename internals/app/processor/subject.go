@@ -45,6 +45,9 @@ func (process *SubjectProcessor) UpdateSubject(subject_id,title, description, im
 func (process *SubjectProcessor) DeleteSubject(id string) error {
 	return process.cache.DeleteSubject(id)
 }
+func (process *SubjectProcessor) GetDeletedSubject() ([]int,error) {
+	return process.cache.GetDeletedSubject()
+}
 
 
 func (process *SubjectProcessor) Certificate(subjectId, userId string) (interface{},error)  {

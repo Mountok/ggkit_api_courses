@@ -7,6 +7,11 @@ create table subjects
     isCertificated VARCHAR(30)
 );
 
+CREATE TABLE deleted_subjects (
+       id serial primary key,
+       subject_id int not null
+);
+
 insert into subjects (title, image, description,isCertificated)
 values ('Базы Данны. SQL', 'test-photo-db.png',
         'Курс по SQL предлагает практическое изучение SQL с нуля, начиная с основ и заканчивая профессиональным уровнем. В рамках курса студенты получат возможность освоить основные концепции SQL.', 'false'),
@@ -233,3 +238,5 @@ CREATE TABLE certificates (
        FOREIGN KEY (user_id) REFERENCES users(id),
        FOREIGN KEY (subject_id) REFERENCES subjects(id)
 );
+
+

@@ -73,6 +73,9 @@ func (db *SubjectCache) UpdateSubject(subject_id,title, description,image_url, i
 func (db *SubjectCache) DeleteSubject(id string) error {
 	return db.storage.DeleteSubject(id)
 }
+func (db *SubjectCache) GetDeletedSubject() ([]int,error) {
+	return db.storage.GetDeletedSubject()
+}
 
 func (db *SubjectCache) GetSubjectById(num int) ([]models.Subject, error) {
 	var findSubject []models.Subject

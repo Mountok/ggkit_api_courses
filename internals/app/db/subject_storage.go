@@ -25,7 +25,7 @@ func NewSubjectStorage(pool *pgxpool.Pool) *SubjectStorage {
 
 func (db *SubjectStorage) GetAllSubjects() ([]models.Subject, error) {
 	var result []models.Subject
-	query := "SELECT id, title, image, description, iscertificated FROM subjects;"
+	query := "SELECT subjects.id, subjects.title, subjects.image, subjects.description, subjects.iscertificated FROM subjects LEFT JOIN deleted_subjects ON subjects.id = deleted_subjects.subject_id WHERE deleted_subjects.subject_id IS NULL;"
 	err := pgxscan.Select(context.Background(), db.databasePool, &result, query)
 	if err != nil {
 		return result, err
@@ -89,9 +89,15 @@ func (db *SubjectStorage) GetSubjectById(id int) ([]models.Subject, error) {
 }
 
 func (db *SubjectStorage) DeleteSubject(id string) error {
-	query := "DELETE FROM subjects WHERE id=$1"
+	query := "INSERT INTO deleted_subjects (subject_id) VALUES ($1);"
 	_, err := db.databasePool.Exec(context.Background(), query, id)
 	return err
+}
+func (db *SubjectStorage) GetDeletedSubject() ([]int, error) {
+	var ids []int
+	query := "SELECT subject_id FROM seleted_subjects;"
+	err := pgxscan.Select(context.Background(),db.databasePool,&ids,query)
+	return ids,err
 }
 
 func (db *SubjectStorage) Certificate(subjectId, userId string) (interface{}, error) {

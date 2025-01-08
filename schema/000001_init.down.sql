@@ -9,3 +9,4 @@ drop table subject_test;
 drop table subjects;
 drop table profiles;
 drop table users;
+drop table deleted_subjects;
