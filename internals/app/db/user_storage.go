@@ -144,7 +144,7 @@ func (db *UserStorage) GetUserOnSubject(subjectId string) ([]models.FindUser, er
 	var findUsers []models.FindUser
 	for _, userId := range findUserIds {
 		var findUser []models.FindUser
-		userQuery := "SELECT user_id, image FROM profiles WHERE user_id = $1"
+		userQuery := "SELECT user_id, image, full_name FROM profiles WHERE user_id = $1"
 		err := pgxscan.Select(context.Background(),db.databasePool,&findUser,userQuery,userId);
 		if err != nil {
 			logrus.Errorf("Ошибка по время получения пользователя по id(%s):\n%s\n",userId,err.Error())

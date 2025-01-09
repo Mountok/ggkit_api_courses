@@ -42,4 +42,5 @@ type LastSubject struct {
 type FindUser struct {
 	Id string `json:"id" db:"user_id"`
 	Image string `json:"image" db:"image"`
+	FullName string `json:"full_name" db:"full_name"`
 }
