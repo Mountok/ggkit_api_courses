@@ -29,7 +29,7 @@ func (db *ThemesStorage) CreateTheme(title, description, subject_id string) (int
 }
 
 func (db *ThemesStorage) GetThemesBySubjectId(id int) (result []models.Theme) {
-	query := "SELECT id, title, description, subject_id FROM themes WHERE subject_id = $1"
+	query := "SELECT id, title, description, subject_id FROM themes WHERE subject_id = $1 ORDER BY id ASC"
 	err := pgxscan.Select(context.Background(), db.databasePool, &result, query, id)
 	if err != nil {
 		log.Errorf("Ошибка при sql запросе: \n %v", err)
