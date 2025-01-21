@@ -282,8 +282,8 @@ func (db *SubjectTestStorage) CheckQuestion(answers []models.QuestionCheckReq, t
 	var resultPoints int
 	var checkNum []int
 	for i := 0; i < len(answers); i++ {
-		var query string = fmt.Sprintf("SELECT COUNT(*) FROM test_questions WHERE id=%d and answer='%s'\n", answers[i].QuestionId, answers[i].Answer)
-		err := pgxscan.Select(context.Background(), db.databasePool, &checkNum, query)
+		var query string = fmt.Sprint("SELECT COUNT(*) FROM test_questions WHERE id=$1 and answer=$2")
+		err := pgxscan.Select(context.Background(), db.databasePool, &checkNum, query,answers[i].QuestionId, answers[i].Answer)
 		if err != nil {
 			return 0, err
 		}

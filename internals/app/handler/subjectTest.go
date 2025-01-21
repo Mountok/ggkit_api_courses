@@ -103,7 +103,7 @@ func (handler *SubjectTestHandler) TestsForSubject(w http.ResponseWriter, r *htt
 
 }
 
-func (handler *SubjectTestHandler) TestsQuestions(w http.ResponseWriter, r *http.Request) {
+func (handler *SubjectTestHandler) 	TestsQuestions(w http.ResponseWriter, r *http.Request) {
 	var (
 		vars   = mux.Vars(r)
 		m      = map[string]interface{}{}
