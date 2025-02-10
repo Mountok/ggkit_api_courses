@@ -30,13 +30,13 @@ func LoadConfig() Cfg {
 	// v.Set("DBPORT", "5436")
 
 	v.Set("PORT", os.Getenv("PORT"))
-	v.Set("DBNAME", "railway")
-	v.Set("DBUSER", "postgres")
-	v.Set("DBPASS", "JMBBpmeyasyiQWhdpLxjESwTwsocyehv")
-	v.Set("DBHOST", "junction.proxy.rlwy.net")
-	v.Set("DBPORT", "38705")
+	v.Set("DBNAME", "skillcamp_app_db")
+	v.Set("DBUSER", "skillcamp_app_db_user")
+	v.Set("DBPASS", "LwYLkrKpSqMHESgJHgfJiKvhfCACnwoZ")
+	v.Set("DBHOST", "dpg-cukq2itds78s739qu52g-a.frankfurt-postgres.render.com")
+	v.Set("DBPORT", "5432")
 	v.AutomaticEnv()
-
+// postgresql://skillcamp_app_db_user:LwYLkrKpSqMHESgJHgfJiKvhfCACnwoZ@dpg-cukq2itds78s739qu52g-a.frankfurt-postgres.render.com/skillcamp_app_db
 	var cfg Cfg
 
 	err := v.Unmarshal(&cfg)
