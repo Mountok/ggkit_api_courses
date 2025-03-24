@@ -33,11 +33,22 @@ docker  run --name=go-praxis-back -p 80:8080 go-praxis
 ```bash
 migrate -path ./schema -database 'postgres://postgres:admin@localhost:5436/postgres?sslmode=disable' up  
 ```
-
 ```bash
    docker run --name my-redis -d -p 6379:6379 redis
    
 ```
+
+### Команды для выгрузки бд с докера 
+
+docker exec -t postgtres pg_dump -U postgres -d postgres -f /tmp/dump.sql
+
+docker cp postgtres:/tmp/dump.sql ./dump.sql
+
+### Команды для загруски бд в дрокер с локальной выгрузки
+
+cat dump.sql | docker exec -i postgres_container psql -U myuser -d mydatabase
+
+
 
 # API DOC
 

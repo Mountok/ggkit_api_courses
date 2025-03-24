@@ -13,6 +13,7 @@ func CreateRoute(
 	loginHandler *handler.LoginHandler,
 	userHandler *handler.UserHandler,
 	testHandler *handler.SubjectTestHandler,
+	commentHandler *handler.CommentHandler,
 ) *mux.Router {
 	router := mux.NewRouter()
 
@@ -121,6 +122,15 @@ func CreateRoute(
 	router.HandleFunc("/api/test/{user_id}/all",testHandler.GetAllCompleted).Methods(
 		http.MethodGet,
 	)
+
+
+	// ! Эндпоинты для комментов
+	router.HandleFunc("/api/comments/{theme_id}", commentHandler.GetCommentsByThemeID).Methods(http.MethodGet)
+	router.HandleFunc("/api/comments", commentHandler.CreateComment).Methods(http.MethodPost)
+	router.HandleFunc("/api/comments/{comment_id}", commentHandler.DeleteComment).Methods(http.MethodDelete)
+	// ! Эндпоинты для ответов администратора
+	router.HandleFunc("/api/admin/reply", commentHandler.CreateReply).Methods(http.MethodPost)
+	router.HandleFunc("/api/admin/reply/{comment_id}", commentHandler.GetRepliesByCommentID).Methods(http.MethodGet)
 
 	// ! ПОЛУЧЕНИЕ СЕРТИФИКАТА
 	router.HandleFunc("/api/certificate/{subject_id}", subjectHandler.Certificate).Methods(

@@ -10,3 +10,5 @@ drop table subjects;
 drop table profiles;
 drop table users;
 drop table deleted_subjects;
+drop table comments;
+drop table admin_replies;

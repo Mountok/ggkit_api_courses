@@ -240,3 +240,52 @@ CREATE TABLE certificates (
 );
 
 
+--  БД для комментов
+CREATE TABLE comments (
+       id serial PRIMARY KEY,
+       user_id TEXT NOT NULL,
+       theme_id INTEGER NOT NULL,
+       content TEXT NOT NULL,
+       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+       FOREIGN KEY (user_id) REFERENCES users(id),
+       FOREIGN KEY (theme_id) REFERENCES themes(id)
+);
+
+create table admin_replies (
+       id serial PRIMARY KEY,
+       comment_id INTEGER NOT NULL,
+       user_id TEXT NOT NULL,
+       content TEXT NOT NULL,
+       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+       FOREIGN KEY (comment_id) REFERENCES comments(id),
+       FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+
+-- Запрос на получение ответов админа на комментарий    
+SELECT 
+    c.id,
+    c.user_id,
+    c.theme_id,
+    c.content,
+    u.email
+FROM 
+    comments c
+JOIN 
+    users u ON u.id = c.user_id;
+
+-- Запрос на получение ответов админимтотра вместо id будет email, в вместо comment_id будет content
+SELECT 
+    ar.id,
+    ar.comment_id,
+    ar.content,
+    ar.user_id,
+    u.email,
+    c.content as comment_content
+FROM 
+    admin_replies ar
+JOIN 
+    users u ON u.id = ar.user_id
+JOIN 
+    comments c ON c.id = ar.comment_id;  
+

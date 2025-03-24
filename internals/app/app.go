@@ -70,6 +70,10 @@ func (server *AppServer) Serve() {
 	testProcess := processor.NewSubjectTestProcessor(testStorage)
 	testHandler := handler.NewSubjectTestHandler(testProcess)
 
+	commentStorage := db.NewCommentStorage(server.db)
+	commentProcess := processor.NewCommentProcessor(commentStorage)
+	commentHandler := handler.NewCommentHandler(commentProcess)
+
 	routes := api.CreateRoute(
 		subjectHandler,
 		themeHandler,
@@ -77,6 +81,7 @@ func (server *AppServer) Serve() {
 		loginHandler,
 		userHandler,
 		testHandler,
+		commentHandler,
 	)
 
 	server.serv = &http.Server{

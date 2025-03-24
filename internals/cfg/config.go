@@ -2,8 +2,9 @@ package cfg
 
 import (
 	"context"
+	// "crypto/tls"
 	"fmt"
-	"os"
+	// "os"
 
 	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
@@ -22,21 +23,21 @@ type Cfg struct {
 func LoadConfig() Cfg {
 	v := viper.New()
 	v.SetEnvPrefix("GGKIT_SERV")
-	// v.Set("PORT", "8080")
-	// v.Set("DBNAME", "postgres")
-	// v.Set("DBUSER", "postgres")
-	// v.Set("DBPASS", "admin")
-	// v.Set("DBHOST", "127.0.0.1")
-	// v.Set("DBPORT", "5436")
+	v.Set("PORT", "8080")
+	v.Set("DBNAME", "postgres")
+	v.Set("DBUSER", "postgres")
+	v.Set("DBPASS", "admin")
+	v.Set("DBHOST", "127.0.0.1")
+	v.Set("DBPORT", "5436")
 
-	v.Set("PORT", os.Getenv("PORT"))
-	v.Set("DBNAME", "skillcamp_app_db")
-	v.Set("DBUSER", "skillcamp_app_db_user")
-	v.Set("DBPASS", "LwYLkrKpSqMHESgJHgfJiKvhfCACnwoZ")
-	v.Set("DBHOST", "dpg-cukq2itds78s739qu52g-a.frankfurt-postgres.render.com")
-	v.Set("DBPORT", "5432")
+	// v.Set("PORT", os.Getenv("PORT"))
+	// v.Set("DBNAME", "skillcamp_app_db")
+	// v.Set("DBUSER", "skillcamp_app_db_user")
+	// v.Set("DBPASS", "LwYLkrKpSqMHESgJHgfJiKvhfCACnwoZ")
+	// v.Set("DBHOST", "dpg-cukq2itds78s739qu52g-a.frankfurt-postgres.render.com")
+	// v.Set("DBPORT", "5432")
 	v.AutomaticEnv()
-// postgresql://skillcamp_app_db_user:LwYLkrKpSqMHESgJHgfJiKvhfCACnwoZ@dpg-cukq2itds78s739qu52g-a.frankfurt-postgres.render.com/skillcamp_app_db
+	// postgresql://skillcamp_app_db_user:LwYLkrKpSqMHESgJHgfJiKvhfCACnwoZ@dpg-cukq2itds78s739qu52g-a.frankfurt-postgres.render.com/skillcamp_app_db
 	var cfg Cfg
 
 	err := v.Unmarshal(&cfg)
@@ -60,13 +61,14 @@ func (cfg *Cfg) GetDBConnetcUrl() string { //маленький метод дл�
 
 func (cfg *Cfg) NewRedisClient() *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
-		// Addr:     "127.0.0.1:6379", // адрес вашего Redis сервера
-		// Password: "",               // пароль, если установлен
-		// DB:       0,                // номер базы данных
-
-		Addr:     "autorack.proxy.rlwy.net:52228",    // адрес вашего Redis сервера
-		Password: "ndauicaHkkzYaCjcFlZZcaMzeHZetGWk", // пароль, если установлен
-		DB:       0,
+		Addr:     "127.0.0.1:6379", // адрес вашего Redis сервера
+		Password: "",               // пароль, если установлен
+		DB:       0,                // номер базы данных
+		// Username: "red-cugh37d2ng1s73ed7irg",
+		// Addr:      "frankfurt-keyvalue.render.com:6379", // адрес вашего Redis сервера
+		// Password:  "M0VErORjU4AmtMNx80EGjlnYq8zFNWYV",   // пароль, если установлен
+		// DB:        0,
+		// TLSConfig: &tls.Config{},
 	})
 	// Проверка подключения
 	log.Println("Connecting to Redis")
@@ -79,4 +81,4 @@ func (cfg *Cfg) NewRedisClient() *redis.Client {
 	return rdb
 }
 
-// redis://default:ndauicaHkkzYaCjcFlZZcaMzeHZetGWk@autorack.proxy.rlwy.net:52228
+// rediss:/red/-cugh37d2ng1s73ed7irg:M0VErORjU4AmtMNx80EGjlnYq8zFNWYV@frankfurt-keyvalue.render.com:6379

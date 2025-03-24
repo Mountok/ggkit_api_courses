@@ -41,3 +41,16 @@ func WrapOKImage(w http.ResponseWriter, m string) {
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Write(fileBytes)
 }
+
+// func WrapOKVideo(w http.ResponseWriter, m string) {
+// 	fileBytes, err := os.ReadFile(m)
+// 	if err != nil {
+// 		WrapError(w, fmt.Errorf("файл не найден"))
+// 	}
+// 	mimeType := http.DetectContentType(fileBytes)
+
+// 	w.Header().Set("Content-Type", mimeType)
+// 	w.WriteHeader(http.StatusOK)
+
+// 	w.Write(fileBytes)
+// }

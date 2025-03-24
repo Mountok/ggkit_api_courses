@@ -4,3 +4,6 @@ migrate -path ./schema -database 'postgres://postgres:admin@localhost:5436/postg
 docker run --name my-redis -d -p 6379:6379 redis
 
 go run cmd/mian.go
+
+
+

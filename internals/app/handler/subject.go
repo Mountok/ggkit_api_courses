@@ -234,11 +234,23 @@ func (handler *SubjectHandler) Image(w http.ResponseWriter, r *http.Request) {
 func (handler *SubjectHandler) Video(w http.ResponseWriter, r *http.Request) {
 	queryParams := r.URL.Query()
 	videoName := queryParams.Get("id")
-	if videoName != "" {
-		imagePath := "./videos/" + videoName
-		WrapOKImage(w, imagePath)
+	if videoName == "" {
+		WrapError(w, errors.New("Имя видео не указано"))
+		return
 	}
-	WrapError(w, errors.New("Имя видео не указано"))
+
+	videoPath := "./videos/" + videoName
+
+	// Проверяем, существует ли файл
+	if _, err := os.Stat(videoPath); os.IsNotExist(err) {
+		WrapError(w, fmt.Errorf("файл не найден"))
+		return
+	}
+
+	// Отправляем файл с поддержкой потокового воспроизведения
+	w.Header().Set("Content-Type", "video/mp4") // Укажи нужный формат
+	w.Header().Set("Accept-Ranges", "bytes")    // Включаем поддержку Range-запросов
+	http.ServeFile(w, r, videoPath)
 }
 func (handler *SubjectHandler) Certificate(w http.ResponseWriter, r *http.Request) {
 	w, r, err := UserIdentify(w, r)
@@ -267,3 +279,4 @@ func (handler *SubjectHandler) Certificate(w http.ResponseWriter, r *http.Reques
 	WrapOK(w, m)
 
 }
+
