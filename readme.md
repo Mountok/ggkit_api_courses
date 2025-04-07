@@ -46,7 +46,15 @@ docker cp postgtres:/tmp/dump.sql ./dump.sql
 
 ### Команды для загруски бд в дрокер с локальной выгрузки
 
-cat dump.sql | docker exec -i postgres_container psql -U myuser -d mydatabase
+cat dump.sql | docker exec -i postgtres psql -U postgres -d postgres
+
+### Создать к процессу
+screen -S go-server
+
+Отключись от экрана (CTRL + A, затем D), сервер останется работать в фоне.
+
+### Вернуться к процессу
+screen -r go-server
 
 
 
@@ -59,7 +67,7 @@ cat dump.sql | docker exec -i postgres_container psql -U myuser -d mydatabase
     none
     --Response--
     {
-    "data": [{
+    "data": [{∏
       "id": int,
       "title": string,
       "image": string,

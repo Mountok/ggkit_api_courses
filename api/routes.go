@@ -2,8 +2,8 @@ package api
 
 import (
 	"ggkit_learn_service/internals/app/handler"
-	"net/http"
 	"github.com/gorilla/mux"
+	"net/http"
 )
 
 func CreateRoute(
@@ -23,7 +23,7 @@ func CreateRoute(
 	router.HandleFunc("/api/subject/{id}", subjectHandler.One).Methods(http.MethodGet)
 	router.HandleFunc("/api/subject", subjectHandler.UploadSubject).Methods(http.MethodPost)
 	router.HandleFunc("/api/subject", subjectHandler.UpdateSubject).Methods(http.MethodPut)
-	router.HandleFunc("/api/delete/subject", subjectHandler.DeleteSubject).Methods(http.MethodDelete,http.MethodGet)
+	router.HandleFunc("/api/delete/subject", subjectHandler.DeleteSubject).Methods(http.MethodDelete, http.MethodGet)
 	////////////////////////////////////////////////////////
 	// ! Эндпоинты для тем
 
@@ -35,7 +35,7 @@ func CreateRoute(
 	// ! Поиск пройденных тем для пользователя по предмету
 	router.HandleFunc("/api/themes/complete/{subject_id}",
 		themeHandler.GetAllCompletedBySubject).Methods(http.MethodGet)
-	
+
 	// ! Поиск пройденных тем для пользователя общее количество
 	router.HandleFunc("/api/themes/completed/{user_id}",
 		themeHandler.GetAllCompleted).Methods(http.MethodGet)
@@ -53,10 +53,10 @@ func CreateRoute(
 
 	////////////////////////////////////////////////////////
 	// ! Авторизация / регистрация
-	
+
 	router.HandleFunc("/api/sign-up", loginHandler.SignUp).Methods(http.MethodPost)
 	router.HandleFunc("/api/sign-in", loginHandler.SignIn).Methods(http.MethodPost)
-	router.HandleFunc("/api/authorization",loginHandler.Authorization).Methods(http.MethodPost)
+	router.HandleFunc("/api/authorization", loginHandler.Authorization).Methods(http.MethodPost)
 	// СТАРОЕ !!!!!
 	// router.HandleFunc("/api/reg", loginHandler.Create).Methods(http.MethodPost)
 	// router.HandleFunc("/api/auth", loginHandler.Auth).Methods(http.MethodPost)
@@ -82,13 +82,12 @@ func CreateRoute(
 	router.HandleFunc("/api/profile/subject", userHandler.LastSubject).Methods(http.MethodGet)
 	// *  установка последнего предмета
 	router.HandleFunc("/api/profile/subject/{course_id}", userHandler.LastSubject).Methods(http.MethodPost)
-	
+
 	// !!! Получение пользователей которую находяться на определенном предмете по id предмета
-	router.HandleFunc("/api/profiles/on/subject/{course_id}",userHandler.GetUserOnSubject).Methods(http.MethodGet)
-	
-	
+	router.HandleFunc("/api/profiles/on/subject/{course_id}", userHandler.GetUserOnSubject).Methods(http.MethodGet)
+
 	////////////////////////////////////////////////////////
-	
+
 	// ! Эндпоинты для тестов
 	router.HandleFunc("/api/test/{subject_id}", testHandler.TestsForSubject).Methods(
 		http.MethodGet,
@@ -119,10 +118,9 @@ func CreateRoute(
 
 	// * Общее колчество пройденных тестов
 
-	router.HandleFunc("/api/test/{user_id}/all",testHandler.GetAllCompleted).Methods(
+	router.HandleFunc("/api/test/{user_id}/all", testHandler.GetAllCompleted).Methods(
 		http.MethodGet,
 	)
-
 
 	// ! Эндпоинты для комментов
 	router.HandleFunc("/api/comments/{theme_id}", commentHandler.GetCommentsByThemeID).Methods(http.MethodGet)
@@ -143,11 +141,8 @@ func CreateRoute(
 	// ! НЕ ТРОГАТЬ Я НЕ ЗНАЮ КАК НО ОНО РАБОТАЕТ
 	router.HandleFunc("/images", subjectHandler.Image).Methods(http.MethodGet)
 
-
-
 	router.HandleFunc("/videos", subjectHandler.Video).Methods(http.MethodGet)
-
+	router.HandleFunc("/content", subjectHandler.HTML).Methods(http.MethodGet)
 
 	return router
 }
-

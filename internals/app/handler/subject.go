@@ -194,7 +194,7 @@ func (handler *SubjectHandler) DeleteSubject(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	subjectID := r.URL.Query().Get("id")
-	switch r.Method{
+	switch r.Method {
 	case http.MethodDelete:
 		err = handler.processor.DeleteSubject(subjectID)
 		if err != nil {
@@ -213,11 +213,10 @@ func (handler *SubjectHandler) DeleteSubject(w http.ResponseWriter, r *http.Requ
 		}
 		var m = map[string]interface{}{
 			"result": "OK",
-			"data": ids,
+			"data":   ids,
 		}
 		WrapOK(w, m)
 	}
-	
 
 }
 
@@ -252,6 +251,30 @@ func (handler *SubjectHandler) Video(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Accept-Ranges", "bytes")    // Включаем поддержку Range-запросов
 	http.ServeFile(w, r, videoPath)
 }
+
+func (handler *SubjectHandler) HTML(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+	pageName := queryParams.Get("id")
+	if pageName == "" {
+		WrapError(w, errors.New("Имя HTML-страницы не указано"))
+		return
+	}
+
+	htmlPath := "./html/" + pageName
+
+	// Проверяем, существует ли файл
+	if _, err := os.Stat(htmlPath); os.IsNotExist(err) {
+		WrapError(w, fmt.Errorf("Файл %s не найден", pageName))
+		return
+	}
+
+	// Устанавливаем заголовки
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	// Отдаём файл
+	http.ServeFile(w, r, htmlPath)
+}
+
 func (handler *SubjectHandler) Certificate(w http.ResponseWriter, r *http.Request) {
 	w, r, err := UserIdentify(w, r)
 	if err != nil {
@@ -272,11 +295,10 @@ func (handler *SubjectHandler) Certificate(w http.ResponseWriter, r *http.Reques
 		m = map[string]interface{}{
 			"result":     "OK",
 			"courseDone": true,
-			"date": date,
+			"date":       date,
 		}
 	}
 
 	WrapOK(w, m)
 
 }
-
