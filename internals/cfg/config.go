@@ -1,12 +1,10 @@
 package cfg
 
 import (
-	"context"
 	// "crypto/tls"
 	"fmt"
 	// "os"
 
-	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -58,27 +56,3 @@ func (cfg *Cfg) GetDBConnetcUrl() string { //маленький метод дл�
 		cfg.DBname,
 	)
 }
-
-func (cfg *Cfg) NewRedisClient() *redis.Client {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "127.0.0.1:6379", // адрес вашего Redis сервера
-		Password: "",               // пароль, если установлен
-		DB:       0,                // номер базы данных
-		// Username: "red-cugh37d2ng1s73ed7irg",
-		// Addr:      "frankfurt-keyvalue.render.com:6379", // адрес вашего Redis сервера
-		// Password:  "M0VErORjU4AmtMNx80EGjlnYq8zFNWYV",   // пароль, если установлен
-		// DB:        0,
-		// TLSConfig: &tls.Config{},
-	})
-	// Проверка подключения
-	log.Println("Connecting to Redis")
-	_, err := rdb.Ping(context.Background()).Result()
-	if err != nil {
-		log.Fatalf("Не удалось подключиться к Redis: %v", err)
-	}
-	log.Printf("Connect to Redis %s\n", rdb.Options().Addr)
-
-	return rdb
-}
-
-// rediss:/red/-cugh37d2ng1s73ed7irg:M0VErORjU4AmtMNx80EGjlnYq8zFNWYV@frankfurt-keyvalue.render.com:6379

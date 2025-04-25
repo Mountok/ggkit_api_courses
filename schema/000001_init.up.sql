@@ -289,3 +289,6 @@ JOIN
 JOIN 
     comments c ON c.id = ar.comment_id;  
 
+
+
+

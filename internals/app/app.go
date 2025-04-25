@@ -6,13 +6,11 @@ import (
 	"ggkit_learn_service/internals/app/db"
 	"ggkit_learn_service/internals/app/handler"
 	"ggkit_learn_service/internals/app/processor"
-	"ggkit_learn_service/internals/app/rdb"
 	"ggkit_learn_service/internals/cfg"
 	"log"
 	"net/http"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/handlers"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -22,18 +20,14 @@ type AppServer struct {
 	ctx    context.Context
 	serv   *http.Server
 	db     *pgxpool.Pool
-	rdb    *redis.Client
 }
 
 func NewServer(config cfg.Cfg, ctx context.Context) *AppServer { //задаем поля нашего сервера, для его старта нам нужен контекст и конфигурация
 	server := new(AppServer)
 	server.ctx = ctx
 	server.config = config
-	server.rdb = config.NewRedisClient()
 	return server
 }
-
-
 
 func (server *AppServer) Serve() {
 	log.Println("Server starting")
@@ -46,8 +40,7 @@ func (server *AppServer) Serve() {
 	}
 
 	subjectStorage := db.NewSubjectStorage(server.db)
-	subjectCache := rdb.NewSubjectCache(subjectStorage,server.rdb)
-	subjectProcessor := processor.NewSubjectProcessor(subjectCache)
+	subjectProcessor := processor.NewSubjectProcessor(subjectStorage)
 	subjectHandler := handler.NewSubjectHandler(subjectProcessor)
 
 	themeStorage := db.NewThemesStorage(server.db)
@@ -85,7 +78,7 @@ func (server *AppServer) Serve() {
 	)
 
 	server.serv = &http.Server{
-		Addr: ":" + server.config.Port,
+		Addr: "0.0.0.0:" + server.config.Port,
 		Handler: handlers.CORS(
 			handlers.AllowedOrigins([]string{
 				"*",

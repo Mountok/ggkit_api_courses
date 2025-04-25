@@ -67,7 +67,7 @@ screen -r go-server
     none
     --Response--
     {
-    "data": [{∏
+    "data": [{ 
       "id": int,
       "title": string,
       "image": string,
@@ -132,7 +132,7 @@ LIMIT 10;
 postgresql://postgres:JMBBpmeyasyiQWhdpLxjESwTwsocyehv@junction.proxy.rlwy.net:38705/railway
 
 
-Для создания файлом миграции:
+Для создания файлом миграции: 
 ```bash
 migrate create -ext sql -dir ./schema -seq init
 ```

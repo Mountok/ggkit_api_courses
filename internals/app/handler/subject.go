@@ -25,11 +25,12 @@ func NewSubjectHandler(processor *processor.SubjectProcessor) *SubjectHandler {
 func (handler *SubjectHandler) List(w http.ResponseWriter, r *http.Request) {
 
 	w, r, err := UserIdentify(w, r)
+	userId := w.Header().Get(UserCtx)
 	if err != nil {
 		WrapErrorWithStatus(w, err, http.StatusUnauthorized)
 		return
 	}
-	list, err := handler.processor.SubjectsList()
+	list, err := handler.processor.SubjectsList(userId)
 	if err != nil {
 		WrapError(w, err)
 		return

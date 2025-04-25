@@ -7,7 +7,6 @@ import (
 	"ggkit_learn_service/internals/app/models"
 	"ggkit_learn_service/internals/utils"
 
-
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
@@ -23,10 +22,30 @@ func NewSubjectStorage(pool *pgxpool.Pool) *SubjectStorage {
 	return storage
 }
 
-func (db *SubjectStorage) GetAllSubjects() ([]models.Subject, error) {
-	var result []models.Subject
-	query := "SELECT subjects.id, subjects.title, subjects.image, subjects.description, subjects.iscertificated FROM subjects LEFT JOIN deleted_subjects ON subjects.id = deleted_subjects.subject_id WHERE deleted_subjects.subject_id IS NULL;"
-	err := pgxscan.Select(context.Background(), db.databasePool, &result, query)
+func (db *SubjectStorage) GetAllSubjects(userId string) ([]models.SubjectResponse, error) {
+	var result []models.SubjectResponse
+	query := `
+			SELECT 
+				subjects.id AS id,
+				subjects.title AS title,
+				subjects.image  as image,
+				subjects.description as description,
+				subjects.isCertificated AS isCertificated,
+				COUNT(themes.id) AS total_themes,
+				COUNT(done_lessons.theme_id) AS completed_themes
+			FROM 
+				subjects
+			LEFT JOIN 
+				deleted_subjects ON subjects.id = deleted_subjects.subject_id
+			LEFT JOIN 
+				themes ON subjects.id = themes.subject_id
+			LEFT JOIN 
+				done_lessons ON themes.id = done_lessons.theme_id AND done_lessons.user_id = $1 -- замените 'USER_ID_HERE' на реальный ID пользователя
+			WHERE 
+				deleted_subjects.subject_id IS NULL
+			GROUP BY 
+				subjects.id, subjects.title, subjects.image, subjects.description, subjects.isCertificated;`
+	err := pgxscan.Select(context.Background(), db.databasePool, &result, query, userId)
 	if err != nil {
 		return result, err
 	}
@@ -96,8 +115,8 @@ func (db *SubjectStorage) DeleteSubject(id string) error {
 func (db *SubjectStorage) GetDeletedSubject() ([]int, error) {
 	var ids []int
 	query := "SELECT subject_id FROM seleted_subjects;"
-	err := pgxscan.Select(context.Background(),db.databasePool,&ids,query)
-	return ids,err
+	err := pgxscan.Select(context.Background(), db.databasePool, &ids, query)
+	return ids, err
 }
 
 func (db *SubjectStorage) Certificate(subjectId, userId string) (interface{}, error) {
@@ -156,7 +175,7 @@ func (db *SubjectStorage) Certificate(subjectId, userId string) (interface{}, er
 				var certfRes []interface{}
 				certfQuery := "SELECT get_date FROM certificates WHERE user_id=$1"
 				err = pgxscan.Select(context.Background(), db.databasePool, &certfRes, certfQuery, userId)
-				if len(certfRes)==0{
+				if len(certfRes) == 0 {
 					return "", err
 				}
 				return certfRes[0], err
@@ -165,7 +184,7 @@ func (db *SubjectStorage) Certificate(subjectId, userId string) (interface{}, er
 			var certfRes []interface{}
 			certfQuery := "SELECT get_date FROM certificates WHERE user_id=$1"
 			err = pgxscan.Select(context.Background(), db.databasePool, &certfRes, certfQuery, userId)
-			if len(certfRes)==0{
+			if len(certfRes) == 0 {
 				return "", err
 			}
 			return certfRes[0], err

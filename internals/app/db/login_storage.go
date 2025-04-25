@@ -90,7 +90,7 @@ func (db *LoginStorage) CreateProfileForUser(user models.UserCreate) (string, er
 		return "", err
 	}
 	log.Infof("Создание профиля для пользователя")
-	_, err = db.databasePool.Exec(context.Background(), query, currentUser[0].Id, "нажмите что бы изменить описание", "-", user.Username, "admin.png")
+	_, err = db.databasePool.Exec(context.Background(), query, currentUser[0].Id, " ", " ", user.Username, "admin.png")
 	if err != nil {
 		return "", err
 	}
@@ -136,5 +136,3 @@ func (db *LoginStorage) Validate(uuid string) (validateUser []models.ValidateUse
 // 	full_name varchar(125) not null,
 // 	image text not null,
 // 	score integer not null default 0,
-
-

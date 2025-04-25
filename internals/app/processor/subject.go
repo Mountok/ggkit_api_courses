@@ -3,23 +3,23 @@ package processor
 import (
 	"errors"
 	"fmt"
+	"ggkit_learn_service/internals/app/db"
 	"ggkit_learn_service/internals/app/models"
-	"ggkit_learn_service/internals/app/rdb"
 	"strconv"
 )
 
 type SubjectProcessor struct {
-	cache *rdb.SubjectCache
+	storage *db.SubjectStorage
 }
 
-func NewSubjectProcessor(cache *rdb.SubjectCache) *SubjectProcessor {
+func NewSubjectProcessor(cache *db.SubjectStorage) *SubjectProcessor {
 	processor := new(SubjectProcessor)
-	processor.cache = cache
+	processor.storage = cache
 	return processor
 }
 
-func (process *SubjectProcessor) SubjectsList() ([]models.Subject, error) {
-	return process.cache.GetAllSubjects()
+func (process *SubjectProcessor) SubjectsList(userId string) ([]models.SubjectResponse, error) {
+	return process.storage.GetAllSubjects(userId)
 }
 func (process *SubjectProcessor) SubjectById(id string) ([]models.Subject, error) {
 	num, err := strconv.Atoi(id)
@@ -29,27 +29,26 @@ func (process *SubjectProcessor) SubjectById(id string) ([]models.Subject, error
 	if num <= 0 {
 		return []models.Subject{}, fmt.Errorf("uncorrect id (%s)", id)
 	}
-	return process.cache.GetSubjectById(num)
+	return process.storage.GetSubjectById(num)
 }
 
 func (process *SubjectProcessor) UploadSubject(title, description, image_url, is_certificated string) (int, error) {
 	if title == "" || title == " " {
 		return 0, errors.New("ошибка: заголовок предмета задан не верно")
 	}
-	return process.cache.UploadStorage(title, description, image_url, is_certificated)
+	return process.storage.UploadStorage(title, description, image_url, is_certificated)
 }
 
-func (process *SubjectProcessor) UpdateSubject(subject_id,title, description, image_url, is_certificated string) (int, error) {
-	return process.cache.UpdateSubject(subject_id,title, description, image_url,is_certificated)
+func (process *SubjectProcessor) UpdateSubject(subject_id, title, description, image_url, is_certificated string) (int, error) {
+	return process.storage.UpdateSubject(subject_id, title, description, image_url, is_certificated)
 }
 func (process *SubjectProcessor) DeleteSubject(id string) error {
-	return process.cache.DeleteSubject(id)
+	return process.storage.DeleteSubject(id)
 }
-func (process *SubjectProcessor) GetDeletedSubject() ([]int,error) {
-	return process.cache.GetDeletedSubject()
+func (process *SubjectProcessor) GetDeletedSubject() ([]int, error) {
+	return process.storage.GetDeletedSubject()
 }
 
-
-func (process *SubjectProcessor) Certificate(subjectId, userId string) (interface{},error)  {
-	return process.cache.Certificate(subjectId,userId)
+func (process *SubjectProcessor) Certificate(subjectId, userId string) (interface{}, error) {
+	return process.storage.Certificate(subjectId, userId)
 }
