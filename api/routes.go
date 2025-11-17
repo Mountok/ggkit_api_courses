@@ -21,6 +21,7 @@ func CreateRoute(
 
 	router.HandleFunc("/api/subject", subjectHandler.List).Methods(http.MethodGet)
 	router.HandleFunc("/api/subject/{id}", subjectHandler.One).Methods(http.MethodGet)
+	// Для админки
 	router.HandleFunc("/api/subject", subjectHandler.UploadSubject).Methods(http.MethodPost)
 	router.HandleFunc("/api/subject", subjectHandler.UpdateSubject).Methods(http.MethodPut)
 	router.HandleFunc("/api/delete/subject", subjectHandler.DeleteSubject).Methods(http.MethodDelete, http.MethodGet)
@@ -28,6 +29,7 @@ func CreateRoute(
 	// ! Эндпоинты для тем
 
 	router.HandleFunc("/api/themes/{subject_id}", themeHandler.Themes).Methods(http.MethodGet)
+	// Для админки
 	router.HandleFunc("/api/themes", themeHandler.CreateTheme).Methods(http.MethodPost)
 	router.HandleFunc("/api/themes/{theme_id}", themeHandler.UpdateTheme).Methods(http.MethodPost)
 	router.HandleFunc("/api/themes/{theme_id}", themeHandler.DeleteTheme).Methods(http.MethodDelete)
